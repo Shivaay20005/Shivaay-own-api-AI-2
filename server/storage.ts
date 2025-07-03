@@ -218,20 +218,21 @@ export class DatabaseStorage implements IStorage {
         // Handle different response formats
         if (jsonResponse.choices && jsonResponse.choices.length > 0) {
           // OpenAI-style response
+          const responseMessage = jsonResponse.choices[0].message.content || jsonResponse.choices[0].text || responseText;
           return {
-            message: jsonResponse.choices[0].message.content || jsonResponse.choices[0].text || responseText,
+            message: this.addShivaaySignature(responseMessage, mode),
             model: jsonResponse.model || model,
           };
         } else if (jsonResponse.message) {
           // Direct message response
           return {
-            message: jsonResponse.message,
+            message: this.addShivaaySignature(jsonResponse.message, mode),
             model: jsonResponse.model || model,
           };
         } else if (jsonResponse.response) {
           // Alternative response format
           return {
-            message: jsonResponse.response,
+            message: this.addShivaaySignature(jsonResponse.response, mode),
             model: jsonResponse.model || model,
           };
         }
@@ -240,8 +241,10 @@ export class DatabaseStorage implements IStorage {
         console.log("Response is plain text, not JSON");
       }
       
+      // Add Shivaay AI signature to response
+      const responseWithSignature = this.addShivaaySignature(responseText.trim(), mode);
       return {
-        message: responseText.trim(),
+        message: responseWithSignature,
         model: model,
       };
     } catch (error) {
@@ -250,6 +253,23 @@ export class DatabaseStorage implements IStorage {
       // Local AI fallback with intelligent responses
       return this.generateLocalResponse(message, model, mode);
     }
+  }
+
+  private addShivaaySignature(message: string, mode?: string): string {
+    // Add Shivaay AI signature based on mode
+    const signatures = {
+      general: "\n\n✨ **Powered by @ShivaayAI** - Your Intelligent Assistant",
+      friend: "\n\n💫 **@ShivaayAI** - Always here for you!",
+      search: "\n\n🔍 **@ShivaayAI** - Research & Discovery",
+      coding: "\n\n⚡ **@ShivaayAI** - Code Expert",
+      math: "\n\n🧮 **@ShivaayAI** - Mathematics Solver",
+      codesearch: "\n\n🔎 **@ShivaayAI** - Code Search",
+      procoder: "\n\n🚀 **@ShivaayAI** - Pro Coder",
+      image: "\n\n🎨 **@ShivaayAI** - Image Creator"
+    };
+    
+    const signature = signatures[mode as keyof typeof signatures] || signatures.general;
+    return message + signature;
   }
 
   private generateLocalResponse(message: string, model: string, mode?: string): { message: string; model: string } {

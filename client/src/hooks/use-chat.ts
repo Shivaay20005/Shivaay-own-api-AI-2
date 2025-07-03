@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ConversationMode, AIModel, Message } from "@shared/schema";
 import { sendChatMessage, getConversationHistory } from "@/lib/api";
@@ -9,7 +9,18 @@ export function useChat(mode: ConversationMode, model: AIModel | "auto") {
   const [isStreaming, setIsStreaming] = useState(false);
   const streamingMessageRef = useRef<string>("");
   const currentStreamingId = useRef<number | null>(null);
+  const previousMode = useRef<ConversationMode>(mode);
   const queryClient = useQueryClient();
+
+  // Clear messages when mode changes
+  useEffect(() => {
+    if (previousMode.current !== mode) {
+      setMessages([]);
+      currentStreamingId.current = null;
+      streamingMessageRef.current = "";
+      previousMode.current = mode;
+    }
+  }, [mode]);
 
   // Load conversation history
   const { data: history } = useQuery({
