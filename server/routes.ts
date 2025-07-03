@@ -143,17 +143,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           case "coding":
           case "procoder":
           case "codesearch":
-            selectedModel = "deepseek-r1-0528"; // Best for coding
+            selectedModel = "gpt-4o-mini"; // Best available for coding
             break;
           case "math":
-            selectedModel = "o3-medium"; // Best for mathematics
+            selectedModel = "claude-3.5-haiku"; // Best for mathematics
             break;
           case "search":
-            selectedModel = "grok-3"; // Best for research
+            selectedModel = "gpt-4o-mini"; // Best for research
             break;
-
           case "image":
-            selectedModel = "pixtral-12b"; // Best for visual tasks
+            selectedModel = "gpt-4o-mini"; // Best for visual tasks
             break;
           case "friend":
             selectedModel = "claude-3.5-haiku"; // Best for conversation

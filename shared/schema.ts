@@ -54,22 +54,14 @@ export type File = typeof files.$inferSelect;
 
 // API Types - Updated to match A3Z API available models
 export const availableModels = [
-  "claude-sonnet-4",
-  "gpt-4.1",
-  "gemini-2.5-pro-preview-06-05",
   "gpt-4o-mini",
-  "o4-mini-medium",
-  "o3-medium",
-  "o4-mini",
-  "r1-1776",
   "claude-3.5-haiku",
   "claude-2",
-  "claude-opus-4",
-  "gpt-4.1-nano",
-  "grok-3",
+  "gemini-1.5-flash",
   "command-r",
-  "pixtral-12b",
-  "deepseek-r1-0528"
+  "gpt-3.5-turbo",
+  "llama-3.1-8b",
+  "mistral-7b"
 ] as const;
 
 export type AIModel = typeof availableModels[number];

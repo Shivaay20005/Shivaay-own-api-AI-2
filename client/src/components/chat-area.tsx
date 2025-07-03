@@ -57,22 +57,14 @@ const examplePrompts = [
 
 const modelDisplayNames: Record<AIModel | "auto", string> = {
   "auto": "Auto-Select Best Model",
-  "claude-sonnet-4": "Creative Assistant",
-  "gpt-4.1": "Smart Helper",
-  "gemini-2.5-pro-preview-06-05": "Advanced Reasoning",
   "gpt-4o-mini": "Quick Response",
-  "o4-mini-medium": "Balanced Model",
-  "o3-medium": "General Purpose",
-  "o4-mini": "Fast Assistant",
-  "r1-1776": "Analytical Mind",
-  "claude-3.5-haiku": "Creative Writer",
+  "claude-3.5-haiku": "Creative Writer", 
   "claude-2": "Conversational AI",
-  "claude-opus-4": "Expert Advisor",
-  "gpt-4.1-nano": "Efficient Helper",
-  "grok-3": "Research Assistant",
+  "gemini-1.5-flash": "Advanced Reasoning",
   "command-r": "Command Expert",
-  "pixtral-12b": "Visual Assistant",
-  "deepseek-r1-0528": "Deep Thinker",
+  "gpt-3.5-turbo": "Smart Helper",
+  "llama-3.1-8b": "Efficient Assistant",
+  "mistral-7b": "Fast Helper",
 };
 
 const modePlaceholders: Record<ConversationMode, string> = {
