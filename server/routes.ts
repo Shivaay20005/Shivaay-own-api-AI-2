@@ -103,8 +103,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Combine context and user message
       const fullMessage = `${contextPrompt}\n\nUser: ${message}`;
 
-      // Call A3Z API
-      const response = await storage.callA3ZAPI(fullMessage, model === "auto" ? "claude-sonnet-4" : model);
+      // Call A3Z API with fallback model
+      const response = await storage.callA3ZAPI(fullMessage, model === "auto" ? "gpt-4o-mini" : model);
       
       // Save message to storage
       await storage.saveMessage({

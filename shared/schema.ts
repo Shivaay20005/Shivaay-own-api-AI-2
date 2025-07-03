@@ -52,10 +52,10 @@ export type Conversation = typeof conversations.$inferSelect;
 export type Message = typeof messages.$inferSelect;
 export type File = typeof files.$inferSelect;
 
-// API Types
+// API Types - Updated to match A3Z API available models
 export const availableModels = [
   "claude-sonnet-4",
-  "gpt-4.1", 
+  "gpt-4.1",
   "gemini-2.5-pro-preview-06-05",
   "gpt-4o-mini",
   "o4-mini-medium",

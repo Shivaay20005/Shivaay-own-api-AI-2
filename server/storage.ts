@@ -50,8 +50,9 @@ export class MemStorage implements IStorage {
   async createConversation(insertConversation: InsertConversation): Promise<Conversation> {
     const id = this.currentConversationId++;
     const conversation: Conversation = {
-      ...insertConversation,
       id,
+      mode: insertConversation.mode || "general",
+      title: insertConversation.title || null,
       createdAt: new Date(),
     };
     this.conversations.set(id, conversation);
@@ -65,8 +66,12 @@ export class MemStorage implements IStorage {
   async saveMessage(insertMessage: InsertMessage): Promise<Message> {
     const id = this.currentMessageId++;
     const message: Message = {
-      ...insertMessage,
       id,
+      conversationId: insertMessage.conversationId || null,
+      role: insertMessage.role,
+      content: insertMessage.content,
+      files: insertMessage.files || null,
+      model: insertMessage.model || null,
       createdAt: new Date(),
     };
     this.messages.set(id, message);
@@ -102,30 +107,77 @@ export class MemStorage implements IStorage {
 
   async callA3ZAPI(message: string, model: string): Promise<{ message: string; model: string }> {
     try {
-      const apiUrl = `https://api.a3z.workers.dev/?user=${encodeURIComponent(message)}&model=${model}`;
+      const apiUrl = `https://api.a3z.workers.dev/?user=${encodeURIComponent(message)}&model=${encodeURIComponent(model)}`;
       
       const response = await fetch(apiUrl, {
         method: 'GET',
         headers: {
-          'User-Agent': 'ShivaayAI/1.0',
+          'Accept': 'text/plain',
+          'User-Agent': 'Mozilla/5.0 (compatible; ShivaayAI/1.0)',
         },
       });
 
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`API Error ${response.status}:`, errorText);
+        
+        // Try to parse error response to get available models
+        try {
+          const errorData = JSON.parse(errorText);
+          if (errorData.error === "Invalid Model" && errorData.available_models) {
+            // If model is invalid, try with a default model
+            const fallbackModel = errorData.available_models[0];
+            console.log(`Retrying with fallback model: ${fallbackModel}`);
+            return this.callA3ZAPI(message, fallbackModel);
+          }
+        } catch (parseError) {
+          // Not JSON, continue with original error
+        }
+        
         throw new Error(`API request failed: ${response.status}`);
       }
 
-      const data = await response.text();
+      const responseText = await response.text();
       
-      // The API returns plain text response
-      return {
-        message: data,
-        model: model,
-      };
+      // Try to parse as JSON first
+      try {
+        const jsonData = JSON.parse(responseText);
+        
+        // Check if it's the new JSON format
+        if (jsonData.choices && jsonData.choices[0] && jsonData.choices[0].message) {
+          return {
+            message: jsonData.choices[0].message.content,
+            model: jsonData.model || model,
+          };
+        }
+        
+        // Check if it's an error response
+        if (jsonData.detail && jsonData.detail.error) {
+          throw new Error(`API Error: ${jsonData.detail.error.message}`);
+        }
+        
+        // Fallback to text content if JSON doesn't match expected format
+        return {
+          message: responseText.trim(),
+          model: model,
+        };
+      } catch (parseError) {
+        // If not JSON, treat as plain text response
+        return {
+          message: responseText.trim(),
+          model: model,
+        };
+      }
     } catch (error) {
       console.error("A3Z API Error:", error);
       
-      // Fallback response
+      // Try a fallback with a known working model
+      if (model !== "claude-sonnet-4") {
+        console.log("Retrying with claude-sonnet-4");
+        return this.callA3ZAPI(message, "claude-sonnet-4");
+      }
+      
+      // If all fails, return a fallback response
       return {
         message: "I apologize, but I'm currently unable to process your request due to a technical issue. Please try again in a moment.",
         model: model,
