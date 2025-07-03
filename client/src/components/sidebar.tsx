@@ -66,13 +66,7 @@ const conversationModes = [
     icon: Image,
     color: "bg-teal-500",
   },
-  {
-    id: "engineer" as ConversationMode,
-    name: "Engineer Mode",
-    description: "Technical solutions",
-    icon: Wrench,
-    color: "bg-gray-500",
-  },
+
 ];
 
 export default function Sidebar({ currentMode, onModeChange, isMobileOpen, onMobileToggle }: SidebarProps) {

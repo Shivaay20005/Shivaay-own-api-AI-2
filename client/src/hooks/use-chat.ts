@@ -72,9 +72,14 @@ export function useChat(mode: ConversationMode, model: AIModel | "auto") {
     sendMessageMutation.mutate({ message, files });
   }, [sendMessageMutation]);
 
+  const clearMessages = useCallback(() => {
+    setMessages([]);
+  }, []);
+
   return {
     messages,
     sendMessage,
+    clearMessages,
     isLoading: sendMessageMutation.isPending,
     error: sendMessageMutation.error,
   };

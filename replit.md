@@ -111,10 +111,10 @@ Shivaay AI is a full-stack web application that provides a privacy-focused AI ch
 
 ## Recent Updates
 
-### January 03, 2025 - Major Feature Enhancement
+### January 03, 2025 - Admin Panel & Enhanced Features
 - ✓ Integrated A3Z API with 14 AI models (claude-sonnet-4, gpt-4.1, gemini-2.5-pro, etc.)
 - ✓ Added intelligent auto-model selection based on conversation mode
-- ✓ Implemented 9 specialized conversation modes:
+- ✓ Implemented 8 specialized conversation modes:
   - General (Shivaay AI) - Smart reasoning with auto-model selection
   - Friend Talk - Casual conversations with empathy
   - Deep Search - Advanced research with web search capabilities
@@ -123,14 +123,17 @@ Shivaay AI is a full-stack web application that provides a privacy-focused AI ch
   - Code Search - Programming resource finder
   - ShivaayPro Coder - Elite programming solutions
   - Image Generation - AI art creation assistance
-  - Engineer Mode - Technical solutions and system design
-- ✓ Added PDF text extraction using pdf-parse library
-- ✓ Enhanced file upload with image and PDF analysis
-- ✓ User-friendly model names (hides technical model names)
-- ✓ Real-time web search indicator and status
+- ✓ Added Admin Panel (Password: Shivaay20005) with features:
+  - Toggle model name visibility in chat messages
+  - System settings control
+  - Protected admin access
+- ✓ Added "New Chat" button for clearing conversation history
+- ✓ Enhanced PDF text extraction using pdf-parse library
+- ✓ User-friendly model names (hides technical model names from users)
 - ✓ Smart model routing (DeepSeek for coding, O3 for math, Grok for research, etc.)
-- ✓ Removed Shayar and Girlfriend modes as requested
-- ✓ Added bottom status bar with live indicators
+- ✓ Real-time web search indicator and status
+- ✓ Removed Shayar, Girlfriend, and Engineer modes as requested
+- ✓ Fixed file upload errors and improved error handling
 
 ### July 03, 2025 - Initial Setup
 - Basic chat interface with dark theme

@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from "react";
-import { Menu, Settings, Brain, Code, Calculator, Search } from "lucide-react";
+import { Menu, Settings, Brain, Code, Calculator, Search, Plus, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import FileUpload from "@/components/file-upload";
 import Message from "@/components/message";
+import AdminPanel from "@/components/admin-panel";
 import { ConversationMode, AIModel, availableModels } from "@shared/schema";
 import { useChat } from "@/hooks/use-chat";
 import { cn } from "@/lib/utils";
@@ -83,7 +84,6 @@ const modePlaceholders: Record<ConversationMode, string> = {
   codesearch: "Search for code solutions and resources...",
   procoder: "Advanced programming challenges...",
   image: "Describe the image you want to create...",
-  engineer: "Technical engineering questions...",
 };
 
 export default function ChatArea({ 
@@ -94,9 +94,11 @@ export default function ChatArea({
 }: ChatAreaProps) {
   const [input, setInput] = useState("");
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [showModelNames, setShowModelNames] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
-  const { messages, sendMessage, isLoading } = useChat(currentMode, selectedModel);
+  const { messages, sendMessage, isLoading, clearMessages } = useChat(currentMode, selectedModel);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -154,12 +156,22 @@ export default function ChatArea({
             </div>
           </div>
           <div className="flex items-center space-x-4">
+            <Button 
+              onClick={clearMessages}
+              variant="outline" 
+              size="sm"
+              className="bg-dark-tertiary border-gray-600 text-white hover:bg-gray-700"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              New Chat
+            </Button>
+            
             <Select value={selectedModel} onValueChange={onModelChange}>
               <SelectTrigger className="w-48 bg-dark-tertiary border-gray-600">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-dark-tertiary border-gray-600">
-                <SelectItem value="auto">Auto-Select</SelectItem>
+                <SelectItem value="auto">Auto-Select Best Model</SelectItem>
                 {availableModels.map((model) => (
                   <SelectItem key={model} value={model}>
                     {modelDisplayNames[model]}
@@ -167,11 +179,17 @@ export default function ChatArea({
                 ))}
               </SelectContent>
             </Select>
+            
             <div className="flex items-center space-x-2">
               <div className="text-xs text-muted">
                 {currentMode === "general" ? "Auto-Mode ON" : `${currentMode.charAt(0).toUpperCase() + currentMode.slice(1)} Mode`}
               </div>
-              <Button variant="ghost" size="sm" className="p-2 hover:bg-gray-700">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="p-2 hover:bg-gray-700"
+                onClick={() => setShowAdminPanel(true)}
+              >
                 <Settings className="w-5 h-5 text-muted" />
               </Button>
             </div>
@@ -232,7 +250,11 @@ export default function ChatArea({
         ) : (
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {messages.map((message) => (
-              <Message key={message.id} message={message} />
+              <Message 
+                key={message.id} 
+                message={message} 
+                showModelName={showModelNames}
+              />
             ))}
             {isLoading && (
               <div className="flex justify-start">
@@ -295,6 +317,14 @@ export default function ChatArea({
           </div>
         </div>
       </main>
+
+      {/* Admin Panel */}
+      <AdminPanel
+        isOpen={showAdminPanel}
+        onClose={() => setShowAdminPanel(false)}
+        showModelNames={showModelNames}
+        onToggleModelNames={setShowModelNames}
+      />
     </div>
   );
 }

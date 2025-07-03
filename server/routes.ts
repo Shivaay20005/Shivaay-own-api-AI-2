@@ -85,9 +85,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         case "image":
           contextPrompt = "You are an AI art creator. Help with image generation prompts, creative descriptions, and visual concepts.";
           break;
-        case "engineer":
-          contextPrompt = "You are an engineering expert. Provide technical solutions, system design, architecture advice, and engineering best practices.";
-          break;
+
         default:
           contextPrompt = "You are Shivaay AI, a helpful and intelligent assistant.";
       }
@@ -124,9 +122,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           case "search":
             selectedModel = "grok-3"; // Best for research
             break;
-          case "engineer":
-            selectedModel = "claude-opus-4"; // Best for technical analysis
-            break;
+
           case "image":
             selectedModel = "pixtral-12b"; // Best for visual tasks
             break;

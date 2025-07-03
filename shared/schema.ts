@@ -82,8 +82,7 @@ export const conversationModes = [
   "math",
   "codesearch",
   "procoder", 
-  "image",
-  "engineer"
+  "image"
 ] as const;
 
 export type ConversationMode = typeof conversationModes[number];
