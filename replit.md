@@ -135,6 +135,20 @@ Shivaay AI is a full-stack web application that provides a privacy-focused AI ch
 - ✓ Removed Shayar, Girlfriend, and Engineer modes as requested
 - ✓ Fixed file upload errors and improved error handling
 
+### July 03, 2025 - Real-time Enhancements & Web Search
+- ✓ Implemented real-time streaming responses with word-by-word display
+- ✓ Removed "New Chat" button from header as requested
+- ✓ Added live web search functionality for Deep Search, Deep Coding, and Code Search modes
+- ✓ Enhanced code highlighting with syntax highlighting and copy functionality
+- ✓ Implemented higher character limits (50,000 chars) for deep modes vs 8,000 for regular modes
+- ✓ Added ReactMarkdown with code block support and copy-to-clipboard features
+- ✓ Enhanced admin panel with password authentication (Shivaay20005)
+- ✓ Added real-time web search indicators in UI
+- ✓ Improved message rendering with markdown support
+- ✓ Added web search status indicators in sidebar and chat header
+- ✓ Enhanced API to perform DuckDuckGo searches for research queries
+- ✓ Smart web search integration for search, coding, and codesearch modes
+
 ### July 03, 2025 - Initial Setup
 - Basic chat interface with dark theme
 - File upload capabilities

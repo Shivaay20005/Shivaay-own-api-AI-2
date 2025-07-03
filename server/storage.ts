@@ -26,8 +26,9 @@ export interface IStorage {
   getFile(id: number): Promise<FileType | undefined>;
   
   // External API
-  callA3ZAPI(message: string, model: string): Promise<{ message: string; model: string }>;
+  callA3ZAPI(message: string, model: string, mode?: string): Promise<{ message: string; model: string }>;
   extractPDFText(buffer: Buffer): Promise<string>;
+  performWebSearch(query: string): Promise<string>;
 }
 
 export class MemStorage implements IStorage {
@@ -105,7 +106,7 @@ export class MemStorage implements IStorage {
     return this.files.get(id);
   }
 
-  async callA3ZAPI(message: string, model: string): Promise<{ message: string; model: string }> {
+  async callA3ZAPI(message: string, model: string, mode?: string): Promise<{ message: string; model: string }> {
     try {
       const apiUrl = `https://api.a3z.workers.dev/?user=${encodeURIComponent(message)}&model=${encodeURIComponent(model)}`;
       
@@ -194,6 +195,46 @@ export class MemStorage implements IStorage {
       console.error("PDF extraction error:", error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       return `[Unable to extract PDF content: ${errorMessage}]`;
+    }
+  }
+
+  async performWebSearch(query: string): Promise<string> {
+    try {
+      // Enhanced web search with real-time data
+      const searchUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1`;
+      
+      const response = await fetch(searchUrl, {
+        headers: {
+          'User-Agent': 'Shivaay AI Assistant'
+        }
+      });
+
+      if (!response.ok) {
+        return `Web search unavailable. Query: ${query}`;
+      }
+
+      const data = await response.json();
+      
+      // Format search results for AI processing
+      let searchResults = `🌐 Real-time web search results for: "${query}"\n\n`;
+      
+      if (data.AbstractText) {
+        searchResults += `📋 Summary: ${data.AbstractText}\n\n`;
+      }
+      
+      if (data.RelatedTopics && data.RelatedTopics.length > 0) {
+        searchResults += "🔍 Related Information:\n";
+        data.RelatedTopics.slice(0, 5).forEach((topic: any, index: number) => {
+          if (topic.Text) {
+            searchResults += `${index + 1}. ${topic.Text}\n`;
+          }
+        });
+      }
+
+      return searchResults || `No specific results found for: ${query}`;
+    } catch (error) {
+      console.error("Web search error:", error);
+      return `Web search temporarily unavailable for: ${query}`;
     }
   }
 }

@@ -1,20 +1,67 @@
+import { useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { Message as MessageType } from "@shared/schema";
 import { cn } from "@/lib/utils";
-import { FileText, Image as ImageIcon } from "lucide-react";
+import { FileText, Copy, Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface MessageProps {
   message: MessageType;
   showModelName?: boolean;
 }
 
+// Custom code block component with copy functionality
+function CodeBlock({ children, className, ...props }: any) {
+  const [copied, setCopied] = useState(false);
+  const match = /language-(\w+)/.exec(className || '');
+  const language = match ? match[1] : '';
+  const code = String(children).replace(/\n$/, '');
+
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
+  return (
+    <div className="relative group">
+      <div className="flex items-center justify-between bg-gray-800 px-4 py-2 text-sm">
+        <span className="text-gray-300">{language || 'code'}</span>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={copyToClipboard}
+          className="opacity-0 group-hover:opacity-100 transition-opacity p-1 h-auto"
+        >
+          {copied ? (
+            <Check className="w-4 h-4 text-green-400" />
+          ) : (
+            <Copy className="w-4 h-4 text-gray-400" />
+          )}
+        </Button>
+      </div>
+      <pre className={`${className} overflow-x-auto p-4 bg-gray-900 text-sm`} {...props}>
+        <code>{children}</code>
+      </pre>
+    </div>
+  );
+}
+
 export default function Message({ message, showModelName = false }: MessageProps) {
   const isUser = message.role === "user";
   const files = message.files as any[] || [];
 
+
+
   return (
     <div className={cn("flex", isUser ? "justify-end" : "justify-start")}>
       <div className={cn(
-        "max-w-3xl px-4 py-3 rounded-xl",
+        "max-w-4xl px-4 py-3 rounded-xl",
         isUser 
           ? "bg-purple-primary text-white" 
           : "bg-dark-secondary border border-gray-700 text-white"
@@ -44,9 +91,34 @@ export default function Message({ message, showModelName = false }: MessageProps
           </div>
         )}
 
-        {/* Text content */}
+        {/* Enhanced text content with markdown and code highlighting */}
         {message.content && (
-          <div className="whitespace-pre-wrap">{message.content}</div>
+          <div className="prose prose-invert max-w-none">
+            {isUser ? (
+              <div className="whitespace-pre-wrap">{message.content}</div>
+            ) : (
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  code: CodeBlock,
+                  p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                  ul: ({ children }) => <ul className="list-disc list-inside mb-2">{children}</ul>,
+                  ol: ({ children }) => <ol className="list-decimal list-inside mb-2">{children}</ol>,
+                  li: ({ children }) => <li className="mb-1">{children}</li>,
+                  h1: ({ children }) => <h1 className="text-xl font-bold mb-2">{children}</h1>,
+                  h2: ({ children }) => <h2 className="text-lg font-bold mb-2">{children}</h2>,
+                  h3: ({ children }) => <h3 className="text-md font-bold mb-2">{children}</h3>,
+                  blockquote: ({ children }) => (
+                    <blockquote className="border-l-4 border-gray-500 pl-4 italic mb-2">
+                      {children}
+                    </blockquote>
+                  ),
+                }}
+              >
+                {message.content}
+              </ReactMarkdown>
+            )}
+          </div>
         )}
 
         {/* Model info for assistant messages */}

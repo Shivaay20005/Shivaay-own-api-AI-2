@@ -68,7 +68,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           contextPrompt = "You are a friendly, casual AI assistant. Respond in a warm, conversational tone with humor and empathy.";
           break;
         case "search":
-          contextPrompt = "You are a research assistant with web search capabilities. Provide detailed, well-researched information with sources when possible. Use current data and facts.";
+          contextPrompt = "You are a research assistant with real-time web search capabilities. You can access current information from the internet. Provide detailed, well-researched information with sources and real-time data. When possible, include current events, latest updates, and fact-checked information.";
           break;
         case "coding":
           contextPrompt = "You are a programming expert. Provide code examples, explanations, debugging help, and best practices.";
@@ -104,8 +104,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
         contextPrompt += `\n\nUser has attached files:\n${fileDescriptions}`;
       }
 
-      // Combine context and user message
-      const fullMessage = `${contextPrompt}\n\nUser: ${message}`;
+      // For search mode, perform web search first
+      let webSearchResults = "";
+      if (mode === "search" || mode === "coding" || mode === "codesearch") {
+        try {
+          // Extract search terms from user message
+          const searchTerms = message.replace(/[^\w\s]/gi, ' ').trim();
+          if (searchTerms.length > 3) {
+            webSearchResults = await storage.performWebSearch(searchTerms);
+          }
+        } catch (error) {
+          console.error("Web search failed:", error);
+          webSearchResults = "🌐 Web search temporarily unavailable.";
+        }
+      }
+
+      // Combine context, web search results, and user message
+      let fullMessage = `${contextPrompt}\n\n`;
+      
+      if (webSearchResults) {
+        fullMessage += `${webSearchResults}\n\n`;
+      }
+      
+      fullMessage += `User: ${message}`;
+
+      // For deep search and coding modes, increase character limit to 10,000 lines
+      const isDeepMode = mode === "search" || mode === "coding" || mode === "procoder" || mode === "codesearch";
+      const maxLength = isDeepMode ? 50000 : 8000; // Higher limits for deep modes
+      
+      if (fullMessage.length > maxLength) {
+        fullMessage = fullMessage.substring(0, maxLength) + "\n\n[Message truncated for processing]";
+      }
 
       // Smart model selection based on mode and content
       let selectedModel = model;
@@ -134,8 +163,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
-      // Call A3Z API with selected model
-      const response = await storage.callA3ZAPI(fullMessage, selectedModel);
+      // Call A3Z API with selected model and mode
+      const response = await storage.callA3ZAPI(fullMessage, selectedModel, mode);
       
       // Save message to storage
       await storage.saveMessage({

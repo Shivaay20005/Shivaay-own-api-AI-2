@@ -156,15 +156,6 @@ export default function ChatArea({
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            <Button 
-              onClick={clearMessages}
-              variant="outline" 
-              size="sm"
-              className="bg-dark-tertiary border-gray-600 text-white hover:bg-gray-700"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              New Chat
-            </Button>
             
             <Select value={selectedModel} onValueChange={onModelChange}>
               <SelectTrigger className="w-48 bg-dark-tertiary border-gray-600">
@@ -183,6 +174,9 @@ export default function ChatArea({
             <div className="flex items-center space-x-2">
               <div className="text-xs text-muted">
                 {currentMode === "general" ? "Auto-Mode ON" : `${currentMode.charAt(0).toUpperCase() + currentMode.slice(1)} Mode`}
+                {(currentMode === "search" || currentMode === "coding" || currentMode === "codesearch") && (
+                  <span className="ml-2 text-green-400">• Web Search Active</span>
+                )}
               </div>
               <Button 
                 variant="ghost" 
