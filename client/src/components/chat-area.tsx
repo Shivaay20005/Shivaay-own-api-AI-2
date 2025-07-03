@@ -265,22 +265,22 @@ export default function ChatArea({
             onFilesChange={setAttachedFiles}
           />
           
-          <div className="p-2 lg:p-4">
-            <div className="max-w-6xl mx-auto">
-              <div className="flex items-end space-x-2 lg:space-x-4">
+          <div className="p-2 lg:p-4 mobile-input-container">
+            <div className="w-full max-w-6xl mx-auto mobile-optimized">
+              <div className="flex items-end space-x-2">
                 <div className="flex-1 relative">
                   <Textarea
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder={modePlaceholders[currentMode]}
-                    className="bg-dark-tertiary border-gray-600 text-white placeholder-muted resize-none focus:ring-2 focus:ring-purple-primary focus:border-transparent pr-12 text-sm lg:text-base min-h-[40px] lg:min-h-[48px]"
+                    className="bg-dark-tertiary border-gray-600 text-white placeholder-muted resize-none focus:ring-2 focus:ring-purple-primary focus:border-transparent pr-12 text-sm lg:text-base min-h-[40px] lg:min-h-[48px] w-full rounded-xl mobile-input-field"
                     rows={1}
                   />
                   <Button
                     onClick={handleSend}
                     disabled={(!input.trim() && attachedFiles.length === 0) || isLoading}
-                    className="absolute right-2 lg:right-3 top-1/2 transform -translate-y-1/2 bg-purple-primary hover:bg-purple-600 p-1.5 lg:p-2"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-purple-primary hover:bg-purple-600 p-1.5 lg:p-2 rounded-lg"
                     size="sm"
                   >
                     <svg className="w-3 h-3 lg:w-4 lg:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

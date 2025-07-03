@@ -41,7 +41,8 @@ export class MemStorage implements IStorage {
   async createConversation(insertConversation: InsertConversation): Promise<Conversation> {
     const conversation: Conversation = {
       id: this.currentConversationId++,
-      ...insertConversation,
+      mode: insertConversation.mode || 'general',
+      title: insertConversation.title || null,
       createdAt: new Date(),
     };
     
@@ -56,7 +57,11 @@ export class MemStorage implements IStorage {
   async saveMessage(insertMessage: InsertMessage): Promise<Message> {
     const message: Message = {
       id: this.currentMessageId++,
-      ...insertMessage,
+      conversationId: insertMessage.conversationId || null,
+      role: insertMessage.role,
+      content: insertMessage.content,
+      files: insertMessage.files || null,
+      model: insertMessage.model || null,
       createdAt: new Date(),
     };
     
@@ -113,6 +118,35 @@ export class MemStorage implements IStorage {
       }
 
       const responseText = await response.text();
+      
+      // Try to parse JSON response first
+      try {
+        const jsonResponse = JSON.parse(responseText);
+        
+        // Handle different response formats
+        if (jsonResponse.choices && jsonResponse.choices.length > 0) {
+          // OpenAI-style response
+          return {
+            message: jsonResponse.choices[0].message.content || jsonResponse.choices[0].text || responseText,
+            model: jsonResponse.model || model,
+          };
+        } else if (jsonResponse.message) {
+          // Direct message response
+          return {
+            message: jsonResponse.message,
+            model: jsonResponse.model || model,
+          };
+        } else if (jsonResponse.response) {
+          // Alternative response format
+          return {
+            message: jsonResponse.response,
+            model: jsonResponse.model || model,
+          };
+        }
+      } catch (parseError) {
+        // If JSON parsing fails, treat as plain text
+        console.log("Response is plain text, not JSON");
+      }
       
       return {
         message: responseText.trim(),
