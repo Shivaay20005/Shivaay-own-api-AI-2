@@ -187,12 +187,13 @@ export class MemStorage implements IStorage {
 
   async extractPDFText(buffer: Buffer): Promise<string> {
     try {
-      // For a production app, you would use a proper PDF parsing library like pdf2pic or pdf-parse
-      // For now, return a placeholder
-      return `[PDF content extraction would happen here. File size: ${buffer.length} bytes]`;
+      const pdfParse = require('pdf-parse');
+      const data = await pdfParse(buffer);
+      return data.text || "[PDF content could not be extracted]";
     } catch (error) {
       console.error("PDF extraction error:", error);
-      return "[Unable to extract PDF content]";
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      return `[Unable to extract PDF content: ${errorMessage}]`;
     }
   }
 }

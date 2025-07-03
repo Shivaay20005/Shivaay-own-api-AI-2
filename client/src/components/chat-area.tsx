@@ -18,15 +18,15 @@ interface ChatAreaProps {
 
 const capabilityCards = [
   {
-    title: "Reasoning & Logic",
-    description: "Complex problem solving",
+    title: "Smart Reasoning",
+    description: "Auto-select best AI model",
     icon: Brain,
     color: "hover:border-blue-500",
     bgColor: "bg-blue-500",
   },
   {
-    title: "Code Generation", 
-    description: "Programming assistance",
+    title: "Code Expert", 
+    description: "Programming & debugging",
     icon: Code,
     color: "hover:border-green-500",
     bgColor: "bg-green-500",
@@ -39,8 +39,8 @@ const capabilityCards = [
     bgColor: "bg-orange-500",
   },
   {
-    title: "File Analysis",
-    description: "Image & PDF processing",
+    title: "Web Search",
+    description: "Real-time research",
     icon: Search,
     color: "hover:border-purple-500",
     bgColor: "bg-purple-500",
@@ -55,33 +55,35 @@ const examplePrompts = [
 ];
 
 const modelDisplayNames: Record<AIModel | "auto", string> = {
-  "auto": "Auto-Select",
-  "claude-sonnet-4": "Claude Sonnet 4",
-  "gpt-4.1": "GPT 4.1",
-  "gemini-2.5-pro-preview-06-05": "Gemini 2.5 Pro",
-  "gpt-4o-mini": "GPT 4o Mini",
-  "o4-mini-medium": "O4 Mini Medium",
-  "o3-medium": "O3 Medium",
-  "o4-mini": "O4 Mini",
-  "r1-1776": "R1-1776",
-  "claude-3.5-haiku": "Claude 3.5 Haiku",
-  "claude-2": "Claude 2",
-  "claude-opus-4": "Claude Opus 4",
-  "gpt-4.1-nano": "GPT 4.1 Nano",
-  "grok-3": "Grok 3",
-  "command-r": "Command R",
-  "pixtral-12b": "Pixtral 12B",
-  "deepseek-r1-0528": "DeepSeek R1",
+  "auto": "Auto-Select Best Model",
+  "claude-sonnet-4": "Creative Assistant",
+  "gpt-4.1": "Smart Helper",
+  "gemini-2.5-pro-preview-06-05": "Advanced Reasoning",
+  "gpt-4o-mini": "Quick Response",
+  "o4-mini-medium": "Balanced Model",
+  "o3-medium": "General Purpose",
+  "o4-mini": "Fast Assistant",
+  "r1-1776": "Analytical Mind",
+  "claude-3.5-haiku": "Creative Writer",
+  "claude-2": "Conversational AI",
+  "claude-opus-4": "Expert Advisor",
+  "gpt-4.1-nano": "Efficient Helper",
+  "grok-3": "Research Assistant",
+  "command-r": "Command Expert",
+  "pixtral-12b": "Visual Assistant",
+  "deepseek-r1-0528": "Deep Thinker",
 };
 
 const modePlaceholders: Record<ConversationMode, string> = {
-  general: "Message Shivaay AI...",
+  general: "Ask me anything - I'll auto-select the best model...",
   friend: "Chat with your AI friend...",
-  shayar: "Ask for poetry or creative writing...",
   search: "What would you like to research?...",
   coding: "Describe your programming problem...",
   math: "Enter your mathematical problem...",
+  codesearch: "Search for code solutions and resources...",
+  procoder: "Advanced programming challenges...",
   image: "Describe the image you want to create...",
+  engineer: "Technical engineering questions...",
 };
 
 export default function ChatArea({ 
@@ -165,9 +167,14 @@ export default function ChatArea({
                 ))}
               </SelectContent>
             </Select>
-            <Button variant="ghost" size="sm" className="p-2 hover:bg-gray-700">
-              <Settings className="w-5 h-5 text-muted" />
-            </Button>
+            <div className="flex items-center space-x-2">
+              <div className="text-xs text-muted">
+                {currentMode === "general" ? "Auto-Mode ON" : `${currentMode.charAt(0).toUpperCase() + currentMode.slice(1)} Mode`}
+              </div>
+              <Button variant="ghost" size="sm" className="p-2 hover:bg-gray-700">
+                <Settings className="w-5 h-5 text-muted" />
+              </Button>
+            </div>
           </div>
         </div>
       </header>
@@ -274,9 +281,16 @@ export default function ChatArea({
                   </Button>
                 </div>
               </div>
-              <p className="text-xs text-muted mt-2 text-center">
-                Shivaay AI can make mistakes. Please verify important information.
-              </p>
+              <div className="flex items-center justify-between text-xs text-muted mt-2">
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-1">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span>Web Search</span>
+                  </div>
+                  <span>14 Models Available</span>
+                </div>
+                <span>Shivaay AI can make mistakes. Verify important information.</span>
+              </div>
             </div>
           </div>
         </div>

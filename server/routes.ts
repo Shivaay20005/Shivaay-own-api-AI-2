@@ -38,7 +38,7 @@ const chatRequestSchema = z.object({
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Chat endpoint
-  app.post("/api/chat", upload.array('files'), async (req, res) => {
+  app.post("/api/chat", upload.any(), async (req, res) => {
     try {
       const { message, model, mode } = chatRequestSchema.parse(req.body);
       const files = req.files as Express.Multer.File[] || [];
@@ -65,25 +65,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let contextPrompt = "";
       switch (mode) {
         case "friend":
-          contextPrompt = "You are a friendly, casual AI assistant. Respond in a warm, conversational tone.";
-          break;
-        case "shayar":
-          contextPrompt = "You are a creative poet and writer. Focus on poetry, creative writing, and artistic expression.";
+          contextPrompt = "You are a friendly, casual AI assistant. Respond in a warm, conversational tone with humor and empathy.";
           break;
         case "search":
-          contextPrompt = "You are a research assistant. Provide detailed, well-researched information with sources when possible.";
+          contextPrompt = "You are a research assistant with web search capabilities. Provide detailed, well-researched information with sources when possible. Use current data and facts.";
           break;
         case "coding":
-          contextPrompt = "You are a programming expert. Provide code examples, explanations, and debugging help.";
+          contextPrompt = "You are a programming expert. Provide code examples, explanations, debugging help, and best practices.";
           break;
         case "math":
-          contextPrompt = "You are a mathematics expert. Solve problems step-by-step with clear explanations.";
+          contextPrompt = "You are a mathematics expert. Solve problems step-by-step with clear explanations and show your work.";
+          break;
+        case "codesearch":
+          contextPrompt = "You are a specialized programming search assistant. Help find code solutions, libraries, frameworks, and programming resources.";
+          break;
+        case "procoder":
+          contextPrompt = "You are ShivaayPro Coder, an elite programming expert. Provide advanced solutions, optimizations, and enterprise-level coding practices.";
           break;
         case "image":
-          contextPrompt = "You are an AI art creator. Help with image generation prompts and creative descriptions.";
+          contextPrompt = "You are an AI art creator. Help with image generation prompts, creative descriptions, and visual concepts.";
+          break;
+        case "engineer":
+          contextPrompt = "You are an engineering expert. Provide technical solutions, system design, architecture advice, and engineering best practices.";
           break;
         default:
-          contextPrompt = "You are Shivaay AI, a helpful assistant.";
+          contextPrompt = "You are Shivaay AI, a helpful and intelligent assistant.";
       }
 
       // Add file analysis context if files are present
@@ -103,8 +109,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Combine context and user message
       const fullMessage = `${contextPrompt}\n\nUser: ${message}`;
 
-      // Call A3Z API with fallback model
-      const response = await storage.callA3ZAPI(fullMessage, model === "auto" ? "gpt-4o-mini" : model);
+      // Smart model selection based on mode and content
+      let selectedModel = model;
+      if (model === "auto") {
+        switch (mode) {
+          case "coding":
+          case "procoder":
+          case "codesearch":
+            selectedModel = "deepseek-r1-0528"; // Best for coding
+            break;
+          case "math":
+            selectedModel = "o3-medium"; // Best for mathematics
+            break;
+          case "search":
+            selectedModel = "grok-3"; // Best for research
+            break;
+          case "engineer":
+            selectedModel = "claude-opus-4"; // Best for technical analysis
+            break;
+          case "image":
+            selectedModel = "pixtral-12b"; // Best for visual tasks
+            break;
+          case "friend":
+            selectedModel = "claude-3.5-haiku"; // Best for conversation
+            break;
+          default:
+            selectedModel = "gpt-4o-mini"; // Good general purpose
+        }
+      }
+
+      // Call A3Z API with selected model
+      const response = await storage.callA3ZAPI(fullMessage, selectedModel);
       
       // Save message to storage
       await storage.saveMessage({

@@ -77,11 +77,13 @@ export type AIModel = typeof availableModels[number];
 export const conversationModes = [
   "general",
   "friend", 
-  "shayar",
   "search",
   "coding",
   "math",
-  "image"
+  "codesearch",
+  "procoder", 
+  "image",
+  "engineer"
 ] as const;
 
 export type ConversationMode = typeof conversationModes[number];

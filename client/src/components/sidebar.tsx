@@ -1,4 +1,4 @@
-import { Brain, MessageCircle, PenTool, Search, Code, Calculator, Image } from "lucide-react";
+import { Brain, MessageCircle, Search, Code, Calculator, Image, Wrench, Zap } from "lucide-react";
 import { ConversationMode } from "@shared/schema";
 import { cn } from "@/lib/utils";
 
@@ -25,13 +25,6 @@ const conversationModes = [
     color: "bg-green-500",
   },
   {
-    id: "shayar" as ConversationMode,
-    name: "Shayar Mode",
-    description: "Poetry & creativity",
-    icon: PenTool,
-    color: "bg-purple-600",
-  },
-  {
     id: "search" as ConversationMode,
     name: "Deep Search",
     description: "Advanced research",
@@ -53,11 +46,32 @@ const conversationModes = [
     color: "bg-orange-500",
   },
   {
+    id: "codesearch" as ConversationMode,
+    name: "Code Search",
+    description: "Programming queries",
+    icon: Search,
+    color: "bg-cyan-500",
+  },
+  {
+    id: "procoder" as ConversationMode,
+    name: "ShivaayPro Coder",
+    description: "Ultimate debugging",
+    icon: Zap,
+    color: "bg-red-500",
+  },
+  {
     id: "image" as ConversationMode,
     name: "Image Generation",
     description: "AI art creation",
     icon: Image,
     color: "bg-teal-500",
+  },
+  {
+    id: "engineer" as ConversationMode,
+    name: "Engineer Mode",
+    description: "Technical solutions",
+    icon: Wrench,
+    color: "bg-gray-500",
   },
 ];
 
@@ -81,9 +95,9 @@ export default function Sidebar({ currentMode, onModeChange, isMobileOpen, onMob
           </div>
           <div className="mt-4 flex items-center space-x-2">
             <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span className="text-sm text-muted">Fully Offline</span>
+            <span className="text-sm text-muted">Web Search</span>
             <span className="text-sm text-muted">•</span>
-            <span className="text-sm text-muted">14 Models Active</span>
+            <span className="text-sm text-muted">Auto-Select Mode</span>
           </div>
         </div>
 
