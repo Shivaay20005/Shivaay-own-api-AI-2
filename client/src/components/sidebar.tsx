@@ -1,6 +1,8 @@
-import { Brain, MessageCircle, Search, Code, Calculator, Image, Wrench, Zap } from "lucide-react";
+import { Brain, MessageCircle, Search, Code, Calculator, Image, Wrench, Zap, User, LogOut } from "lucide-react";
 import { ConversationMode } from "@shared/schema";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/use-auth";
+import { Button } from "@/components/ui/button";
 
 interface SidebarProps {
   currentMode: ConversationMode;
@@ -70,6 +72,7 @@ const conversationModes = [
 ];
 
 export default function Sidebar({ currentMode, onModeChange, isMobileOpen, onMobileToggle }: SidebarProps) {
+  const { user, logout, isLoggingOut } = useAuth();
   return (
     <>
       {/* Mobile Overlay */}
@@ -141,6 +144,36 @@ export default function Sidebar({ currentMode, onModeChange, isMobileOpen, onMob
               );
             })}
           </div>
+        </div>
+
+        {/* User Profile Section */}
+        <div className="p-3 lg:p-4 border-t border-gray-700">
+          {user && (
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-purple-primary rounded-full flex items-center justify-center">
+                  <User className="w-4 h-4 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-white truncate">
+                    {user.firstName} {user.lastName}
+                  </p>
+                  <p className="text-xs text-muted truncate">{user.email}</p>
+                </div>
+              </div>
+              
+              <Button
+                onClick={logout}
+                disabled={isLoggingOut}
+                variant="ghost"
+                size="sm"
+                className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-400/10"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                {isLoggingOut ? "Signing out..." : "Sign Out"}
+              </Button>
+            </div>
+          )}
         </div>
         </div>
       </aside>

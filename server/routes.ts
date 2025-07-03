@@ -1,8 +1,10 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
+import session from "express-session";
+import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
-import { insertMessageSchema } from "@shared/schema";
+import { insertMessageSchema, loginUserSchema, registerUserSchema } from "@shared/schema";
 import { z } from "zod";
 
 // Configure multer for file uploads
@@ -36,9 +38,130 @@ const chatRequestSchema = z.object({
   mode: z.string(),
 });
 
+// Session types
+declare module 'express-session' {
+  interface SessionData {
+    userId?: number;
+    email?: string;
+  }
+}
+
+// Authentication middleware
+const requireAuth = (req: Request, res: Response, next: NextFunction) => {
+  if (!req.session.userId) {
+    return res.status(401).json({ error: "Authentication required" });
+  }
+  next();
+};
+
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Session setup
+  const pgSession = connectPg(session);
+  app.use(session({
+    store: new pgSession({
+      conString: process.env.DATABASE_URL,
+      createTableIfMissing: true,
+      tableName: 'sessions'
+    }),
+    secret: process.env.SESSION_SECRET || 'your-secret-key-here',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    }
+  }));
+
+  // Authentication routes
+  app.post("/api/register", async (req, res) => {
+    try {
+      const userData = registerUserSchema.parse(req.body);
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(userData.email);
+      if (existingUser) {
+        return res.status(400).json({ error: "User already exists with this email" });
+      }
+      
+      const user = await storage.createUser(userData);
+      
+      // Set session
+      req.session.userId = user.id;
+      req.session.email = user.email;
+      
+      res.json({ 
+        success: true, 
+        user: { 
+          id: user.id, 
+          email: user.email, 
+          firstName: user.firstName, 
+          lastName: user.lastName 
+        }
+      });
+    } catch (error) {
+      console.error("Registration error:", error);
+      res.status(400).json({ error: "Registration failed" });
+    }
+  });
+
+  app.post("/api/login", async (req, res) => {
+    try {
+      const credentials = loginUserSchema.parse(req.body);
+      
+      const user = await storage.loginUser(credentials);
+      if (!user) {
+        return res.status(401).json({ error: "Invalid email or password" });
+      }
+      
+      // Set session
+      req.session.userId = user.id;
+      req.session.email = user.email;
+      
+      res.json({ 
+        success: true, 
+        user: { 
+          id: user.id, 
+          email: user.email, 
+          firstName: user.firstName, 
+          lastName: user.lastName 
+        }
+      });
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(400).json({ error: "Login failed" });
+    }
+  });
+
+  app.post("/api/logout", (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ error: "Logout failed" });
+      }
+      res.json({ success: true });
+    });
+  });
+
+  app.get("/api/user", requireAuth, async (req, res) => {
+    try {
+      const user = await storage.getUserById(req.session.userId!);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      
+      res.json({
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName
+      });
+    } catch (error) {
+      console.error("Get user error:", error);
+      res.status(500).json({ error: "Failed to get user" });
+    }
+  });
   // Chat endpoint
-  app.post("/api/chat", upload.any(), async (req, res) => {
+  app.post("/api/chat", requireAuth, upload.any(), async (req, res) => {
     try {
       const { message, model, mode } = chatRequestSchema.parse(req.body);
       const files = req.files as Express.Multer.File[] || [];
@@ -218,10 +341,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get conversation history
-  app.get("/api/conversations/:mode", async (req, res) => {
+  app.get("/api/conversations/:mode", requireAuth, async (req, res) => {
     try {
       const { mode } = req.params;
-      const messages = await storage.getMessagesByMode(mode);
+      const messages = await storage.getMessagesByMode(mode, req.session.userId);
       res.json(messages);
     } catch (error) {
       console.error("Get conversations error:", error);

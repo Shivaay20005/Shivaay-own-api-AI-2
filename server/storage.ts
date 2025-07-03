@@ -1,15 +1,36 @@
-// Backup working storage implementation
-import { Conversation, Message, File as FileType, InsertConversation, InsertMessage, InsertFile } from "@shared/schema";
+import { 
+  Conversation, 
+  Message, 
+  File as FileType, 
+  User,
+  InsertConversation, 
+  InsertMessage, 
+  InsertFile, 
+  InsertUser,
+  LoginUser,
+  RegisterUser 
+} from "@shared/schema";
+import { db } from "./db";
+import { users, conversations, messages, files } from "@shared/schema";
+import { eq, and } from "drizzle-orm";
+import bcrypt from "bcrypt";
 
 export interface IStorage {
+  // User authentication
+  createUser(user: RegisterUser): Promise<User>;
+  loginUser(credentials: LoginUser): Promise<User | null>;
+  getUserById(id: number): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  
   // Conversations
   createConversation(conversation: InsertConversation): Promise<Conversation>;
   getConversation(id: number): Promise<Conversation | undefined>;
+  getUserConversations(userId: number): Promise<Conversation[]>;
   
   // Messages
   saveMessage(message: InsertMessage): Promise<Message>;
   getMessagesByConversation(conversationId: number): Promise<Message[]>;
-  getMessagesByMode(mode: string): Promise<Message[]>;
+  getMessagesByMode(mode: string, userId?: number): Promise<Message[]>;
   
   // Files
   saveFile(file: InsertFile): Promise<FileType>;
@@ -21,75 +42,146 @@ export interface IStorage {
   performWebSearch(query: string): Promise<string>;
 }
 
-export class MemStorage implements IStorage {
-  private conversations: Map<number, Conversation>;
-  private messages: Map<number, Message>;
-  private files: Map<number, FileType>;
-  private currentConversationId: number;
-  private currentMessageId: number;
-  private currentFileId: number;
-
-  constructor() {
-    this.conversations = new Map();
-    this.messages = new Map();
-    this.files = new Map();
-    this.currentConversationId = 1;
-    this.currentMessageId = 1;
-    this.currentFileId = 1;
+export class DatabaseStorage implements IStorage {
+  // User authentication methods
+  async createUser(userData: RegisterUser): Promise<User> {
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
+    
+    const [user] = await db
+      .insert(users)
+      .values({
+        email: userData.email,
+        password: hashedPassword,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+      })
+      .returning();
+    
+    return user;
   }
 
-  async createConversation(insertConversation: InsertConversation): Promise<Conversation> {
-    const conversation: Conversation = {
-      id: this.currentConversationId++,
-      mode: insertConversation.mode || 'general',
-      title: insertConversation.title || null,
-      createdAt: new Date(),
-    };
+  async loginUser(credentials: LoginUser): Promise<User | null> {
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, credentials.email));
     
-    this.conversations.set(conversation.id, conversation);
+    if (!user) return null;
+    
+    const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+    if (!isPasswordValid) return null;
+    
+    return user;
+  }
+
+  async getUserById(id: number): Promise<User | undefined> {
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, id));
+    
+    return user;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email));
+    
+    return user;
+  }
+
+  // Conversations
+  async createConversation(insertConversation: InsertConversation): Promise<Conversation> {
+    const [conversation] = await db
+      .insert(conversations)
+      .values(insertConversation)
+      .returning();
+    
     return conversation;
   }
 
+  async getUserConversations(userId: number): Promise<Conversation[]> {
+    return await db
+      .select()
+      .from(conversations)
+      .where(eq(conversations.userId, userId));
+  }
+
   async getConversation(id: number): Promise<Conversation | undefined> {
-    return this.conversations.get(id);
+    const [conversation] = await db
+      .select()
+      .from(conversations)
+      .where(eq(conversations.id, id));
+    
+    return conversation;
   }
 
   async saveMessage(insertMessage: InsertMessage): Promise<Message> {
-    const message: Message = {
-      id: this.currentMessageId++,
-      conversationId: insertMessage.conversationId || null,
-      role: insertMessage.role,
-      content: insertMessage.content,
-      files: insertMessage.files || null,
-      model: insertMessage.model || null,
-      createdAt: new Date(),
-    };
+    const [message] = await db
+      .insert(messages)
+      .values(insertMessage)
+      .returning();
     
-    this.messages.set(message.id, message);
     return message;
   }
 
   async getMessagesByConversation(conversationId: number): Promise<Message[]> {
-    return Array.from(this.messages.values()).filter(m => m.conversationId === conversationId);
+    return await db
+      .select()
+      .from(messages)
+      .where(eq(messages.conversationId, conversationId));
   }
 
-  async getMessagesByMode(mode: string): Promise<Message[]> {
-    return Array.from(this.messages.values());
+  async getMessagesByMode(mode: string, userId?: number): Promise<Message[]> {
+    if (userId) {
+      return await db
+        .select({
+          id: messages.id,
+          conversationId: messages.conversationId,
+          role: messages.role,
+          content: messages.content,
+          files: messages.files,
+          model: messages.model,
+          createdAt: messages.createdAt,
+        })
+        .from(messages)
+        .innerJoin(conversations, eq(messages.conversationId, conversations.id))
+        .where(and(eq(conversations.mode, mode), eq(conversations.userId, userId)));
+    }
+    
+    return await db
+      .select({
+        id: messages.id,
+        conversationId: messages.conversationId,
+        role: messages.role,
+        content: messages.content,
+        files: messages.files,
+        model: messages.model,
+        createdAt: messages.createdAt,
+      })
+      .from(messages)
+      .innerJoin(conversations, eq(messages.conversationId, conversations.id))
+      .where(eq(conversations.mode, mode));
   }
 
   async saveFile(insertFile: InsertFile): Promise<FileType> {
-    const file: FileType = {
-      id: this.currentFileId++,
-      ...insertFile,
-      createdAt: new Date(),
-    };
+    const [file] = await db
+      .insert(files)
+      .values(insertFile)
+      .returning();
     
-    this.files.set(file.id, file);
     return file;
   }
 
   async getFile(id: number): Promise<FileType | undefined> {
-    return this.files.get(id);
+    const [file] = await db
+      .select()
+      .from(files)
+      .where(eq(files.id, id));
+    
+    return file;
   }
 
   async callA3ZAPI(message: string, model: string, mode?: string): Promise<{ message: string; model: string }> {
@@ -291,4 +383,4 @@ What would you like to work on today?`,
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
