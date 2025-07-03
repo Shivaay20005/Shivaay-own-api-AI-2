@@ -10,13 +10,17 @@ interface AdminPanelProps {
   onClose: () => void;
   showModelNames: boolean;
   onToggleModelNames: (show: boolean) => void;
+  hackerModeEnabled: boolean;
+  onToggleHackerMode: (enabled: boolean) => void;
 }
 
 export default function AdminPanel({ 
   isOpen, 
   onClose, 
   showModelNames, 
-  onToggleModelNames 
+  onToggleModelNames,
+  hackerModeEnabled,
+  onToggleHackerMode
 }: AdminPanelProps) {
   const [password, setPassword] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -106,12 +110,28 @@ export default function AdminPanel({
                   />
                 </div>
 
+                <div className="flex items-center justify-between border-t border-gray-600 pt-4">
+                  <div>
+                    <label className="text-sm font-medium text-red-400">
+                      🔴 Hacker Mode
+                    </label>
+                    <p className="text-xs text-muted">
+                      Enable unrestricted Dark GPT mode for users
+                    </p>
+                  </div>
+                  <Switch
+                    checked={hackerModeEnabled}
+                    onCheckedChange={onToggleHackerMode}
+                  />
+                </div>
+
                 <div className="pt-2 border-t border-gray-600">
                   <h4 className="text-xs font-medium text-muted mb-2">
                     Current Settings:
                   </h4>
                   <ul className="text-xs text-muted space-y-1">
                     <li>• Model Names: {showModelNames ? "Visible" : "Hidden"}</li>
+                    <li>• Hacker Mode: {hackerModeEnabled ? <span className="text-red-400">Enabled</span> : "Disabled"}</li>
                     <li>• Auto-Select: Enabled</li>
                     <li>• Web Search: Active</li>
                     <li>• File Upload: Enabled</li>

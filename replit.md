@@ -165,6 +165,10 @@ Shivaay AI is a full-stack web application that provides a privacy-focused AI ch
 - ✓ Removed white input lines and improved ChatGPT-style input styling
 - ✓ Enhanced mobile responsiveness with proper safe area handling
 - ✓ Fixed registration issues by running proper database migrations
+- ✓ Added Dark GPT/Hacker Mode with @ShivaayHackerv branding
+- ✓ Implemented admin-controlled hacker mode access (password: Shivaay20005)
+- ✓ Created unrestricted AI responses for cybersecurity and hacking topics
+- ✓ Added special hacker mode prompts for bypassing content restrictions
 
 ### July 03, 2025 - Initial Setup
 - Basic chat interface with dark theme

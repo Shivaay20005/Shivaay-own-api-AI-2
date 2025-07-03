@@ -1,4 +1,4 @@
-import { Brain, MessageCircle, Search, Code, Calculator, Image, Wrench, Zap, User, LogOut } from "lucide-react";
+import { Brain, MessageCircle, Search, Code, Calculator, Image, Wrench, Zap, User, LogOut, Skull } from "lucide-react";
 import { ConversationMode } from "@shared/schema";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
@@ -9,6 +9,7 @@ interface SidebarProps {
   onModeChange: (mode: ConversationMode) => void;
   isMobileOpen: boolean;
   onMobileToggle: (open: boolean) => void;
+  hackerModeEnabled?: boolean;
 }
 
 const conversationModes = [
@@ -68,11 +69,21 @@ const conversationModes = [
     icon: Image,
     color: "bg-teal-500",
   },
-
 ];
 
-export default function Sidebar({ currentMode, onModeChange, isMobileOpen, onMobileToggle }: SidebarProps) {
+const hackerMode = {
+  id: "hacker" as ConversationMode,
+  name: "🔴 Dark GPT",
+  description: "Unrestricted mode",
+  icon: Skull,
+  color: "bg-red-600",
+};
+
+export default function Sidebar({ currentMode, onModeChange, isMobileOpen, onMobileToggle, hackerModeEnabled = false }: SidebarProps) {
   const { user, logout, isLoggingOut } = useAuth();
+  
+  // Include hacker mode only if enabled by admin
+  const availableModes = hackerModeEnabled ? [...conversationModes, hackerMode] : conversationModes;
   return (
     <>
       {/* Mobile Overlay */}
@@ -113,7 +124,7 @@ export default function Sidebar({ currentMode, onModeChange, isMobileOpen, onMob
             Conversation Modes
           </h3>
           <div className="space-y-2">
-            {conversationModes.map((mode) => {
+            {availableModes.map((mode) => {
               const Icon = mode.icon;
               const isActive = currentMode === mode.id;
               

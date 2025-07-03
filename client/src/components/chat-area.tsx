@@ -16,6 +16,8 @@ interface ChatAreaProps {
   selectedModel: AIModel | "auto";
   onModelChange: (model: AIModel | "auto") => void;
   onMobileMenuToggle: () => void;
+  hackerModeEnabled: boolean;
+  onToggleHackerMode: (enabled: boolean) => void;
 }
 
 const capabilityCards = [
@@ -77,13 +79,16 @@ const modePlaceholders: Record<ConversationMode, string> = {
   codesearch: "Search for code solutions and resources...",
   procoder: "Advanced programming challenges...",
   image: "Describe the image you want to create...",
+  hacker: "🔴 Enter your hacking query... No restrictions.",
 };
 
 export default function ChatArea({ 
   currentMode, 
   selectedModel, 
   onModelChange,
-  onMobileMenuToggle 
+  onMobileMenuToggle,
+  hackerModeEnabled,
+  onToggleHackerMode
 }: ChatAreaProps) {
   const [input, setInput] = useState("");
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
@@ -383,6 +388,8 @@ export default function ChatArea({
         onClose={() => setShowAdminPanel(false)}
         showModelNames={showModelNames}
         onToggleModelNames={setShowModelNames}
+        hackerModeEnabled={hackerModeEnabled}
+        onToggleHackerMode={onToggleHackerMode}
       />
     </div>
   );

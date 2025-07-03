@@ -7,6 +7,7 @@ export default function ChatPage() {
   const [currentMode, setCurrentMode] = useState<ConversationMode>("general");
   const [selectedModel, setSelectedModel] = useState<AIModel | "auto">("auto");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [hackerModeEnabled, setHackerModeEnabled] = useState(false);
 
   return (
     <div className="h-screen overflow-hidden bg-dark-primary text-white flex">
@@ -23,6 +24,7 @@ export default function ChatPage() {
         onModeChange={setCurrentMode}
         isMobileOpen={isMobileMenuOpen}
         onMobileToggle={setIsMobileMenuOpen}
+        hackerModeEnabled={hackerModeEnabled}
       />
       
       <ChatArea
@@ -30,6 +32,8 @@ export default function ChatPage() {
         selectedModel={selectedModel}
         onModelChange={setSelectedModel}
         onMobileMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        hackerModeEnabled={hackerModeEnabled}
+        onToggleHackerMode={setHackerModeEnabled}
       />
     </div>
   );
