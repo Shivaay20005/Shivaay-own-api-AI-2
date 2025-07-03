@@ -71,33 +71,42 @@ const conversationModes = [
 
 export default function Sidebar({ currentMode, onModeChange, isMobileOpen, onMobileToggle }: SidebarProps) {
   return (
-    <aside className={cn(
-      "fixed lg:static inset-y-0 left-0 z-50 w-80 bg-dark-secondary border-r border-gray-700 transform transition-transform duration-200 ease-in-out",
-      isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-    )}>
-      <div className="flex flex-col h-full">
+    <>
+      {/* Mobile Overlay */}
+      {isMobileOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={() => onMobileToggle(false)}
+        />
+      )}
+      
+      <aside className={cn(
+        "fixed lg:static inset-y-0 left-0 z-50 w-72 lg:w-80 bg-dark-secondary border-r border-gray-700 transform transition-transform duration-200 ease-in-out",
+        isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+      )}>
+        <div className="flex flex-col h-full">
         {/* Header */}
-        <div className="p-6 border-b border-gray-700">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-primary to-purple-secondary rounded-xl flex items-center justify-center">
-              <Brain className="w-6 h-6 text-white" />
+        <div className="p-4 lg:p-6 border-b border-gray-700">
+          <div className="flex items-center space-x-2 lg:space-x-3">
+            <div className="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-br from-purple-primary to-purple-secondary rounded-xl flex items-center justify-center">
+              <Brain className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white">Shivaay AI</h1>
-              <p className="text-sm text-muted">Local Assistant</p>
+              <h1 className="text-lg lg:text-xl font-bold text-white">Shivaay AI</h1>
+              <p className="text-xs lg:text-sm text-muted">Local Assistant</p>
             </div>
           </div>
-          <div className="mt-4 flex items-center space-x-2">
+          <div className="mt-3 lg:mt-4 flex items-center space-x-2">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-sm text-muted">Real-time Web Search</span>
-            <span className="text-sm text-muted">•</span>
-            <span className="text-sm text-muted">AI Auto-Select</span>
+            <span className="text-xs lg:text-sm text-muted">Real-time Web Search</span>
+            <span className="text-xs lg:text-sm text-muted">•</span>
+            <span className="text-xs lg:text-sm text-muted">AI Auto-Select</span>
           </div>
         </div>
 
         {/* Conversation Modes */}
-        <div className="flex-1 overflow-y-auto p-4">
-          <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">
+        <div className="flex-1 overflow-y-auto p-3 lg:p-4">
+          <h3 className="text-xs lg:text-sm font-semibold text-muted uppercase tracking-wider mb-3 lg:mb-4">
             Conversation Modes
           </h3>
           <div className="space-y-2">
@@ -113,19 +122,19 @@ export default function Sidebar({ currentMode, onModeChange, isMobileOpen, onMob
                     onMobileToggle(false);
                   }}
                   className={cn(
-                    "w-full p-4 rounded-xl text-left transition-all duration-200",
+                    "w-full p-3 lg:p-4 rounded-xl text-left transition-all duration-200",
                     isActive
                       ? "bg-purple-primary bg-opacity-20 border border-purple-primary"
                       : "bg-dark-tertiary hover:bg-gray-700"
                   )}
                 >
-                  <div className="flex items-center space-x-3">
-                    <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center", mode.color)}>
-                      <Icon className="w-4 h-4 text-white" />
+                  <div className="flex items-center space-x-2 lg:space-x-3">
+                    <div className={cn("w-6 h-6 lg:w-8 lg:h-8 rounded-lg flex items-center justify-center", mode.color)}>
+                      <Icon className="w-3 h-3 lg:w-4 lg:h-4 text-white" />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-white">{mode.name}</h4>
-                      <p className="text-sm text-muted">{mode.description}</p>
+                      <h4 className="text-sm lg:text-base font-semibold text-white">{mode.name}</h4>
+                      <p className="text-xs lg:text-sm text-muted">{mode.description}</p>
                     </div>
                   </div>
                 </button>
@@ -133,7 +142,8 @@ export default function Sidebar({ currentMode, onModeChange, isMobileOpen, onMob
             })}
           </div>
         </div>
-      </div>
-    </aside>
+        </div>
+      </aside>
+    </>
   );
 }

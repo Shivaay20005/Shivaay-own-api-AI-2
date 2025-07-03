@@ -130,35 +130,35 @@ export default function ChatArea({
   const showWelcome = messages.length === 0;
 
   return (
-    <div className="lg:ml-80 flex flex-col h-screen">
+    <div className="lg:ml-80 flex flex-col h-screen min-h-screen">
       {/* Top Bar */}
-      <header className="bg-dark-secondary border-b border-gray-700 p-4">
+      <header className="bg-dark-secondary border-b border-gray-700 p-2 lg:p-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 lg:space-x-4">
             <Button 
               variant="ghost" 
               size="sm"
               className="lg:hidden p-2 hover:bg-gray-700"
               onClick={onMobileMenuToggle}
             >
-              <Menu className="w-5 h-5" />
+              <Menu className="w-4 h-4" />
             </Button>
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-purple-primary to-purple-secondary rounded-lg flex items-center justify-center">
-                <Brain className="w-4 h-4 text-white" />
+            <div className="flex items-center space-x-2 lg:space-x-3">
+              <div className="w-6 h-6 lg:w-8 lg:h-8 bg-gradient-to-br from-purple-primary to-purple-secondary rounded-lg flex items-center justify-center">
+                <Brain className="w-3 h-3 lg:w-4 lg:h-4 text-white" />
               </div>
-              <div>
-                <h2 className="font-semibold text-white">Chat Assistant</h2>
-                <p className="text-sm text-muted">
+              <div className="hidden sm:block">
+                <h2 className="text-sm lg:text-base font-semibold text-white">Chat Assistant</h2>
+                <p className="text-xs lg:text-sm text-muted hidden lg:block">
                   Current Model: {modelDisplayNames[selectedModel]}
                 </p>
               </div>
             </div>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-1 lg:space-x-4">
             
             <Select value={selectedModel} onValueChange={onModelChange}>
-              <SelectTrigger className="w-48 bg-dark-tertiary border-gray-600">
+              <SelectTrigger className="w-32 lg:w-48 bg-dark-tertiary border-gray-600 text-xs lg:text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-dark-tertiary border-gray-600">
@@ -171,20 +171,20 @@ export default function ChatArea({
               </SelectContent>
             </Select>
             
-            <div className="flex items-center space-x-2">
-              <div className="text-xs text-muted">
-                {currentMode === "general" ? "Auto-Mode ON" : `${currentMode.charAt(0).toUpperCase() + currentMode.slice(1)} Mode`}
+            <div className="flex items-center space-x-1 lg:space-x-2">
+              <div className="text-xs text-muted hidden sm:block">
+                {currentMode === "general" ? "Auto-Mode" : `${currentMode.charAt(0).toUpperCase() + currentMode.slice(1)}`}
                 {(currentMode === "search" || currentMode === "coding" || currentMode === "codesearch") && (
-                  <span className="ml-2 text-green-400">• Web Search Active</span>
+                  <span className="ml-1 text-green-400 text-xs">🌐</span>
                 )}
               </div>
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="p-2 hover:bg-gray-700"
+                className="p-1 lg:p-2 hover:bg-gray-700"
                 onClick={() => setShowAdminPanel(true)}
               >
-                <Settings className="w-5 h-5 text-muted" />
+                <Settings className="w-4 h-4 lg:w-5 lg:h-5 text-muted" />
               </Button>
             </div>
           </div>
@@ -194,46 +194,46 @@ export default function ChatArea({
       {/* Chat Messages */}
       <main className="flex-1 flex flex-col overflow-hidden">
         {showWelcome ? (
-          <div className="flex-1 flex flex-col items-center justify-center p-8 max-w-4xl mx-auto w-full">
-            <div className="text-center mb-12">
-              <div className="w-20 h-20 bg-gradient-to-br from-purple-primary to-purple-secondary rounded-full flex items-center justify-center mx-auto mb-6">
-                <Brain className="w-10 h-10 text-white" />
+          <div className="flex-1 flex flex-col items-center justify-center p-4 lg:p-8 max-w-6xl mx-auto w-full">
+            <div className="text-center mb-6 lg:mb-12">
+              <div className="w-16 h-16 lg:w-20 lg:h-20 bg-gradient-to-br from-purple-primary to-purple-secondary rounded-full flex items-center justify-center mx-auto mb-4 lg:mb-6">
+                <Brain className="w-8 h-8 lg:w-10 lg:h-10 text-white" />
               </div>
-              <h1 className="text-4xl font-bold text-white mb-4">Welcome to Shivaay AI!</h1>
-              <p className="text-lg text-muted max-w-2xl mx-auto">
-                I'm your fully offline, privacy-focused AI assistant. I can help you with reasoning, coding, mathematics, web search, file analysis, and much more!
+              <h1 className="text-2xl lg:text-4xl font-bold text-white mb-2 lg:mb-4">Welcome to Shivaay AI!</h1>
+              <p className="text-sm lg:text-lg text-muted max-w-2xl mx-auto px-4">
+                Your AI assistant with web search, coding help, and file analysis
               </p>
             </div>
 
             {/* Capability Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full mb-12">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6 w-full mb-6 lg:mb-12">
               {capabilityCards.map((card, index) => {
                 const Icon = card.icon;
                 return (
                   <div
                     key={index}
                     className={cn(
-                      "bg-dark-secondary p-6 rounded-xl border border-gray-700 transition-all duration-200 cursor-pointer",
+                      "bg-dark-secondary p-3 lg:p-6 rounded-xl border border-gray-700 transition-all duration-200 cursor-pointer",
                       card.color
                     )}
                   >
-                    <div className={cn("w-12 h-12 rounded-lg flex items-center justify-center mb-4", card.bgColor)}>
-                      <Icon className="w-6 h-6 text-white" />
+                    <div className={cn("w-8 h-8 lg:w-12 lg:h-12 rounded-lg flex items-center justify-center mb-2 lg:mb-4", card.bgColor)}>
+                      <Icon className="w-4 h-4 lg:w-6 lg:h-6 text-white" />
                     </div>
-                    <h3 className="font-semibold text-white mb-2">{card.title}</h3>
-                    <p className="text-sm text-muted">{card.description}</p>
+                    <h3 className="text-sm lg:text-base font-semibold text-white mb-1 lg:mb-2">{card.title}</h3>
+                    <p className="text-xs lg:text-sm text-muted">{card.description}</p>
                   </div>
                 );
               })}
             </div>
 
             {/* Example Prompts */}
-            <div className="flex flex-wrap gap-3 justify-center">
+            <div className="flex flex-wrap gap-2 lg:gap-3 justify-center px-4">
               {examplePrompts.map((prompt, index) => (
                 <Button
                   key={index}
                   variant="ghost"
-                  className="bg-dark-tertiary hover:bg-gray-600 text-muted hover:text-white transition-all duration-200"
+                  className="bg-dark-tertiary hover:bg-gray-600 text-muted hover:text-white transition-all duration-200 text-xs lg:text-sm p-2 lg:p-3"
                   onClick={() => handleExampleClick(prompt)}
                 >
                   {prompt}
@@ -242,7 +242,7 @@ export default function ChatArea({
             </div>
           </div>
         ) : (
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          <div className="flex-1 overflow-y-auto p-2 lg:p-4 space-y-4">
             {messages.map((message) => (
               <Message 
                 key={message.id} 
@@ -252,7 +252,7 @@ export default function ChatArea({
             ))}
             {isLoading && (
               <div className="flex justify-start">
-                <div className="bg-dark-secondary border border-gray-700 rounded-xl px-4 py-3 max-w-3xl">
+                <div className="bg-dark-secondary border border-gray-700 rounded-xl px-3 lg:px-4 py-2 lg:py-3 max-w-3xl">
                   <div className="flex items-center space-x-2">
                     <div className="w-2 h-2 bg-purple-primary rounded-full animate-pulse"></div>
                     <div className="w-2 h-2 bg-purple-primary rounded-full animate-pulse" style={{ animationDelay: "0.2s" }}></div>
@@ -273,39 +273,40 @@ export default function ChatArea({
             onFilesChange={setAttachedFiles}
           />
           
-          <div className="p-4">
-            <div className="max-w-4xl mx-auto">
-              <div className="flex items-end space-x-4">
+          <div className="p-2 lg:p-4">
+            <div className="max-w-6xl mx-auto">
+              <div className="flex items-end space-x-2 lg:space-x-4">
                 <div className="flex-1 relative">
                   <Textarea
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder={modePlaceholders[currentMode]}
-                    className="bg-dark-tertiary border-gray-600 text-white placeholder-muted resize-none focus:ring-2 focus:ring-purple-primary focus:border-transparent pr-12"
+                    className="bg-dark-tertiary border-gray-600 text-white placeholder-muted resize-none focus:ring-2 focus:ring-purple-primary focus:border-transparent pr-12 text-sm lg:text-base min-h-[40px] lg:min-h-[48px]"
                     rows={1}
                   />
                   <Button
                     onClick={handleSend}
                     disabled={(!input.trim() && attachedFiles.length === 0) || isLoading}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-purple-primary hover:bg-purple-600 p-2"
+                    className="absolute right-2 lg:right-3 top-1/2 transform -translate-y-1/2 bg-purple-primary hover:bg-purple-600 p-1.5 lg:p-2"
                     size="sm"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3 h-3 lg:w-4 lg:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                     </svg>
                   </Button>
                 </div>
               </div>
               <div className="flex items-center justify-between text-xs text-muted mt-2">
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2 lg:space-x-4">
                   <div className="flex items-center space-x-1">
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span>Web Search</span>
+                    <span className="hidden sm:inline">Web Search</span>
+                    <span className="sm:hidden">🌐</span>
                   </div>
-                  <span>14 Models Available</span>
+                  <span className="hidden lg:inline">14 Models Available</span>
                 </div>
-                <span>Shivaay AI can make mistakes. Verify important information.</span>
+                <span className="hidden lg:inline">Shivaay AI can make mistakes. Verify important information.</span>
               </div>
             </div>
           </div>
