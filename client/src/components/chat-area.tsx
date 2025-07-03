@@ -10,6 +10,8 @@ import { ConversationMode, AIModel, availableModels } from "@shared/schema";
 import { useChat } from "@/hooks/use-chat";
 import { cn } from "@/lib/utils";
 import { validateFile } from "@/lib/file-utils";
+import VoiceButton from "@/components/voice-button";
+import { useToast } from "@/hooks/use-toast";
 
 interface ChatAreaProps {
   currentMode: ConversationMode;
@@ -138,6 +140,33 @@ export default function ChatArea({
       handleSend();
     }
   };
+
+  // Voice functionality
+  const handleVoiceTranscript = (transcript: string) => {
+    setInput(prev => prev + (prev ? " " : "") + transcript);
+  };
+
+  const handleSpeakResponse = async (text: string) => {
+    // This will be called when we want to speak AI responses
+    if (window.shivaaySpeak) {
+      window.shivaaySpeak(text);
+    }
+  };
+
+  // Auto-speak the latest AI response when messages update
+  useEffect(() => {
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage && lastMessage.role === "assistant" && lastMessage.content) {
+      // Only auto-speak if the message is recent (within last 2 seconds)
+      const messageTime = lastMessage.createdAt ? new Date(lastMessage.createdAt).getTime() : Date.now();
+      const now = Date.now();
+      if (now - messageTime < 2000) {
+        setTimeout(() => {
+          handleSpeakResponse(lastMessage.content);
+        }, 500); // Small delay to let the message render
+      }
+    }
+  }, [messages]);
 
   const handleExampleClick = (prompt: string) => {
     setInput(prompt);
@@ -346,6 +375,16 @@ export default function ChatArea({
                       placeholder={modePlaceholders[currentMode]}
                       className="chat-input-textarea mobile-input-field min-h-[40px] max-h-[120px] py-2 sm:py-3 px-0"
                       rows={1}
+                    />
+                  </div>
+                  
+                  {/* Voice Button */}
+                  <div className="flex-shrink-0 p-2 sm:p-3">
+                    <VoiceButton
+                      onTranscript={handleVoiceTranscript}
+                      onSpeakResponse={handleSpeakResponse}
+                      disabled={isLoading}
+                      className="hover:bg-gray-600"
                     />
                   </div>
                   
