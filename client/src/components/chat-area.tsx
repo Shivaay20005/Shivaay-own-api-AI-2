@@ -205,7 +205,7 @@ export default function ChatArea({
       {/* Chat Messages */}
       <main className="flex-1 flex flex-col overflow-hidden">
         {showWelcome ? (
-          <div className="flex-1 flex flex-col items-center justify-center p-4 lg:p-8 max-w-6xl mx-auto w-full">
+          <div className="flex-1 flex flex-col items-center justify-center mobile-welcome p-4 lg:p-8 max-w-6xl mx-auto w-full">
             <div className="text-center mb-6 lg:mb-12">
               <div className="w-16 h-16 lg:w-20 lg:h-20 bg-gradient-to-br from-purple-primary to-purple-secondary rounded-full flex items-center justify-center mx-auto mb-4 lg:mb-6">
                 <Brain className="w-8 h-8 lg:w-10 lg:h-10 text-white" />
@@ -253,7 +253,7 @@ export default function ChatArea({
             </div>
           </div>
         ) : (
-          <div className="flex-1 overflow-y-auto p-2 lg:p-4 space-y-4">
+          <div className="flex-1 overflow-y-auto mobile-messages mobile-scroll p-2 sm:p-3 lg:p-4 space-y-4">
             {messages.map((message) => (
               <Message 
                 key={message.id} 
@@ -278,8 +278,8 @@ export default function ChatArea({
         )}
 
         {/* Input Area with Integrated File Upload */}
-        <div className="border-t border-gray-700 bg-dark-secondary">
-          <div className="p-3 sm:p-4 lg:p-6">
+        <div className="border-t border-gray-700 bg-dark-secondary mobile-input-area">
+          <div className="p-3 sm:p-4 lg:p-6 mobile-input-container">
             <div className="w-full max-w-4xl mx-auto">
               {/* Attached Files Display */}
               {attachedFiles.length > 0 && (
@@ -311,7 +311,7 @@ export default function ChatArea({
               
               {/* Input Container */}
               <div className="relative">
-                <div className="flex items-end space-x-2 bg-dark-tertiary rounded-2xl border border-gray-600 focus-within:border-purple-primary transition-colors">
+                <div className="chat-input-container flex items-end space-x-2">
                   {/* File Upload Button */}
                   <div className="flex-shrink-0 p-2 sm:p-3">
                     <input
@@ -339,7 +339,7 @@ export default function ChatArea({
                       onChange={(e) => setInput(e.target.value)}
                       onKeyDown={handleKeyDown}
                       placeholder={modePlaceholders[currentMode]}
-                      className="bg-transparent border-0 text-white placeholder-muted resize-none focus:ring-0 focus:outline-none text-sm sm:text-base min-h-[40px] max-h-[120px] py-2 sm:py-3 px-0"
+                      className="chat-input-textarea mobile-input-field min-h-[40px] max-h-[120px] py-2 sm:py-3 px-0"
                       rows={1}
                     />
                   </div>
