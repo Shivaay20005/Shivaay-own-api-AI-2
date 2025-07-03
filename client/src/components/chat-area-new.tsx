@@ -3,7 +3,6 @@ import { Menu, Settings, Brain, Code, Calculator, Search, Plus, MessageSquare, P
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import FileUpload from "@/components/file-upload";
 import Message from "@/components/message";
 import AdminPanel from "@/components/admin-panel";
 import { ConversationMode, AIModel, availableModels } from "@shared/schema";
@@ -50,33 +49,21 @@ const capabilityCards = [
 ];
 
 const examplePrompts = [
-  "Solve: x² + 5x + 6 = 0",
-  "Write a sorting algorithm in Python",
-  "Analyze this image for me",
-  "Explain quantum computing basics",
+  "Explain quantum computing",
+  "Write a Python function",
+  "Solve this equation: x² + 5x + 6 = 0",
+  "What's the weather like?",
 ];
 
-const modelDisplayNames: Record<AIModel | "auto", string> = {
-  "auto": "Auto-Select Best Model",
-  "gpt-4o-mini": "Quick Response",
-  "claude-3.5-haiku": "Creative Writer", 
-  "claude-2": "Conversational AI",
-  "gemini-1.5-flash": "Advanced Reasoning",
-  "command-r": "Command Expert",
-  "gpt-3.5-turbo": "Smart Helper",
-  "llama-3.1-8b": "Efficient Assistant",
-  "mistral-7b": "Fast Helper",
-};
-
-const modePlaceholders: Record<ConversationMode, string> = {
-  general: "Ask me anything - I'll auto-select the best model...",
-  friend: "Chat with your AI friend...",
-  search: "What would you like to research?...",
-  coding: "Describe your programming problem...",
-  math: "Enter your mathematical problem...",
-  codesearch: "Search for code solutions and resources...",
-  procoder: "Advanced programming challenges...",
-  image: "Describe the image you want to create...",
+const modePlaceholders = {
+  general: "Ask me anything...",
+  friend: "What's on your mind?",
+  search: "What would you like to research?",
+  coding: "Describe your coding challenge...",
+  codesearch: "What code or solution are you looking for?",
+  mathematics: "Enter your mathematical problem...",
+  "shivaay-pro": "What advanced coding task can I help with?",
+  "image-gen": "Describe the image you want to create...",
 };
 
 export default function ChatArea({ 
@@ -138,113 +125,116 @@ export default function ChatArea({
     setInput(prompt);
   };
 
-  const showWelcome = messages.length === 0;
+  const handleAdminAuth = (password: string) => {
+    if (password === "Shivaay20005") {
+      setShowAdminPanel(false);
+      return true;
+    }
+    return false;
+  };
 
   return (
-    <div className="lg:ml-80 flex flex-col h-screen min-h-screen">
-      {/* Top Bar */}
-      <header className="bg-dark-secondary border-b border-gray-700 p-2 lg:p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2 lg:space-x-4">
-            <Button 
-              variant="ghost" 
-              size="sm"
-              className="lg:hidden p-2 hover:bg-gray-700"
-              onClick={onMobileMenuToggle}
-            >
-              <Menu className="w-4 h-4" />
-            </Button>
-            <div className="flex items-center space-x-2 lg:space-x-3">
-              <div className="w-6 h-6 lg:w-8 lg:h-8 bg-gradient-to-br from-purple-primary to-purple-secondary rounded-lg flex items-center justify-center">
-                <Brain className="w-3 h-3 lg:w-4 lg:h-4 text-white" />
-              </div>
-              <div className="hidden sm:block">
-                <h2 className="text-sm lg:text-base font-semibold text-white">Chat Assistant</h2>
-                <p className="text-xs lg:text-sm text-muted hidden lg:block">
-                  Current Model: {modelDisplayNames[selectedModel]}
-                </p>
-              </div>
+    <div className="flex flex-col h-full bg-dark-primary relative">
+      {/* Header - Fully Responsive */}
+      <div className="flex items-center justify-between p-3 sm:p-4 border-b border-gray-700 bg-dark-secondary">
+        <div className="flex items-center space-x-2 sm:space-x-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onMobileMenuToggle}
+            className="lg:hidden text-white hover:bg-gray-700 p-2"
+          >
+            <Menu className="w-5 h-5" />
+          </Button>
+          
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-purple-primary to-purple-600 rounded-full flex items-center justify-center">
+              <span className="text-white text-sm sm:text-base font-bold">S</span>
             </div>
-          </div>
-          <div className="flex items-center space-x-1 lg:space-x-4">
-            
-            <Select value={selectedModel} onValueChange={onModelChange}>
-              <SelectTrigger className="w-32 lg:w-48 bg-dark-tertiary border-gray-600 text-xs lg:text-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-dark-tertiary border-gray-600">
-                <SelectItem value="auto">Auto-Select Best Model</SelectItem>
-                {availableModels.map((model) => (
-                  <SelectItem key={model} value={model}>
-                    {modelDisplayNames[model]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            
-            <div className="flex items-center space-x-1 lg:space-x-2">
-              <div className="text-xs text-muted hidden sm:block">
-                {currentMode === "general" ? "Auto-Mode" : `${currentMode.charAt(0).toUpperCase() + currentMode.slice(1)}`}
-                {(currentMode === "search" || currentMode === "coding" || currentMode === "codesearch") && (
-                  <span className="ml-1 text-green-400 text-xs">🌐</span>
-                )}
-              </div>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="p-1 lg:p-2 hover:bg-gray-700"
-                onClick={() => setShowAdminPanel(true)}
-              >
-                <Settings className="w-4 h-4 lg:w-5 lg:h-5 text-muted" />
-              </Button>
-            </div>
+            <h1 className="text-white font-semibold text-base sm:text-lg lg:text-xl">
+              {currentMode === "general" ? "Shivaay AI" : 
+               currentMode === "friend" ? "Friend Talk" :
+               currentMode === "search" ? "Deep Search" :
+               currentMode === "coding" ? "Deep Coding" :
+               currentMode === "codesearch" ? "Code Search" :
+               currentMode === "shivaay-pro" ? "ShivaayPro Coder" :
+               currentMode === "image-gen" ? "Image Generation" :
+               currentMode === "mathematics" ? "Mathematics" : "Shivaay AI"}
+            </h1>
           </div>
         </div>
-      </header>
+        
+        <div className="flex items-center space-x-2">
+          <Select value={selectedModel} onValueChange={onModelChange}>
+            <SelectTrigger className="w-[90px] sm:w-[120px] lg:w-[140px] bg-dark-tertiary border-gray-600 text-white text-xs sm:text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-dark-secondary border-gray-600">
+              <SelectItem value="auto" className="text-white hover:bg-gray-700">Auto</SelectItem>
+              {availableModels.map((model) => (
+                <SelectItem key={model} value={model} className="text-white hover:bg-gray-700">
+                  {model}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowAdminPanel(true)}
+            className="text-white hover:bg-gray-700 p-2"
+          >
+            <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
+          </Button>
+        </div>
+      </div>
 
-      {/* Chat Messages */}
-      <main className="flex-1 flex flex-col overflow-hidden">
-        {showWelcome ? (
-          <div className="flex-1 flex flex-col items-center justify-center p-4 lg:p-8 max-w-6xl mx-auto w-full">
-            <div className="text-center mb-6 lg:mb-12">
-              <div className="w-16 h-16 lg:w-20 lg:h-20 bg-gradient-to-br from-purple-primary to-purple-secondary rounded-full flex items-center justify-center mx-auto mb-4 lg:mb-6">
-                <Brain className="w-8 h-8 lg:w-10 lg:h-10 text-white" />
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-h-0">
+        {messages.length === 0 ? (
+          <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto w-full">
+            <div className="text-center mb-8 sm:mb-12">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-purple-primary to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                <span className="text-white text-2xl sm:text-3xl font-bold">S</span>
               </div>
-              <h1 className="text-2xl lg:text-4xl font-bold text-white mb-2 lg:mb-4">Welcome to Shivaay AI!</h1>
-              <p className="text-sm lg:text-lg text-muted max-w-2xl mx-auto px-4">
-                Your AI assistant with web search, coding help, and file analysis
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2 sm:mb-4">
+                Welcome to Shivaay AI
+              </h2>
+              <p className="text-muted text-sm sm:text-base lg:text-lg max-w-2xl mx-auto px-4">
+                Your intelligent AI assistant with advanced capabilities across multiple domains
               </p>
             </div>
 
-            {/* Capability Cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6 w-full mb-6 lg:mb-12">
+            {/* Capability Cards - Responsive Grid */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 w-full mb-6 sm:mb-8 lg:mb-12">
               {capabilityCards.map((card, index) => {
                 const Icon = card.icon;
                 return (
                   <div
                     key={index}
                     className={cn(
-                      "bg-dark-secondary p-3 lg:p-6 rounded-xl border border-gray-700 transition-all duration-200 cursor-pointer",
+                      "bg-dark-secondary p-3 sm:p-4 lg:p-6 rounded-xl border border-gray-700 transition-all duration-200 cursor-pointer",
                       card.color
                     )}
                   >
-                    <div className={cn("w-8 h-8 lg:w-12 lg:h-12 rounded-lg flex items-center justify-center mb-2 lg:mb-4", card.bgColor)}>
-                      <Icon className="w-4 h-4 lg:w-6 lg:h-6 text-white" />
+                    <div className={cn("w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-lg flex items-center justify-center mb-2 sm:mb-3 lg:mb-4", card.bgColor)}>
+                      <Icon className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white" />
                     </div>
-                    <h3 className="text-sm lg:text-base font-semibold text-white mb-1 lg:mb-2">{card.title}</h3>
-                    <p className="text-xs lg:text-sm text-muted">{card.description}</p>
+                    <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-white mb-1 sm:mb-2">{card.title}</h3>
+                    <p className="text-xs sm:text-sm lg:text-base text-muted">{card.description}</p>
                   </div>
                 );
               })}
             </div>
 
-            {/* Example Prompts */}
-            <div className="flex flex-wrap gap-2 lg:gap-3 justify-center px-4">
+            {/* Example Prompts - Responsive */}
+            <div className="flex flex-wrap gap-2 sm:gap-3 justify-center px-4 max-w-3xl">
               {examplePrompts.map((prompt, index) => (
                 <Button
                   key={index}
                   variant="ghost"
-                  className="bg-dark-tertiary hover:bg-gray-600 text-muted hover:text-white transition-all duration-200 text-xs lg:text-sm p-2 lg:p-3"
+                  className="bg-dark-tertiary hover:bg-gray-600 text-muted hover:text-white transition-all duration-200 text-xs sm:text-sm p-2 sm:p-3"
                   onClick={() => handleExampleClick(prompt)}
                 >
                   {prompt}
@@ -253,7 +243,7 @@ export default function ChatArea({
             </div>
           </div>
         ) : (
-          <div className="flex-1 overflow-y-auto p-2 lg:p-4 space-y-4">
+          <div className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6 space-y-4 sm:space-y-6">
             {messages.map((message) => (
               <Message 
                 key={message.id} 
@@ -263,7 +253,7 @@ export default function ChatArea({
             ))}
             {isLoading && (
               <div className="flex justify-start">
-                <div className="bg-dark-secondary border border-gray-700 rounded-xl px-3 lg:px-4 py-2 lg:py-3 max-w-3xl">
+                <div className="bg-dark-secondary border border-gray-700 rounded-xl px-4 py-3 max-w-3xl">
                   <div className="flex items-center space-x-2">
                     <div className="w-2 h-2 bg-purple-primary rounded-full animate-pulse"></div>
                     <div className="w-2 h-2 bg-purple-primary rounded-full animate-pulse" style={{ animationDelay: "0.2s" }}></div>
@@ -277,7 +267,7 @@ export default function ChatArea({
           </div>
         )}
 
-        {/* Input Area with Integrated File Upload */}
+        {/* Input Area with Integrated File Upload - ChatGPT Style */}
         <div className="border-t border-gray-700 bg-dark-secondary">
           <div className="p-3 sm:p-4 lg:p-6">
             <div className="w-full max-w-4xl mx-auto">
@@ -285,13 +275,13 @@ export default function ChatArea({
               {attachedFiles.length > 0 && (
                 <div className="mb-3 flex flex-wrap gap-2">
                   {attachedFiles.map((file, index) => (
-                    <div key={index} className="flex items-center space-x-2 bg-dark-tertiary px-3 py-1.5 rounded-full text-sm">
+                    <div key={index} className="flex items-center space-x-2 bg-dark-tertiary px-3 py-1.5 rounded-full text-sm border border-gray-600">
                       {file.type.startsWith('image/') ? (
                         <ImageIcon className="w-4 h-4 text-blue-400" />
                       ) : (
                         <FileText className="w-4 h-4 text-green-400" />
                       )}
-                      <span className="text-white truncate max-w-[120px]">{file.name}</span>
+                      <span className="text-white truncate max-w-[120px] sm:max-w-[200px]">{file.name}</span>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -309,9 +299,9 @@ export default function ChatArea({
                 </div>
               )}
               
-              {/* Input Container */}
+              {/* Input Container - ChatGPT Style */}
               <div className="relative">
-                <div className="flex items-end space-x-2 bg-dark-tertiary rounded-2xl border border-gray-600 focus-within:border-purple-primary transition-colors">
+                <div className="flex items-end bg-dark-tertiary rounded-2xl border border-gray-600 focus-within:border-purple-primary focus-within:ring-1 focus-within:ring-purple-primary transition-all duration-200">
                   {/* File Upload Button */}
                   <div className="flex-shrink-0 p-2 sm:p-3">
                     <input
@@ -326,20 +316,21 @@ export default function ChatArea({
                       variant="ghost"
                       size="sm"
                       onClick={() => fileInputRef.current?.click()}
-                      className="p-1.5 sm:p-2 hover:bg-gray-600 rounded-lg text-gray-400 hover:text-white"
+                      className="p-1.5 sm:p-2 hover:bg-gray-600 rounded-lg text-gray-400 hover:text-white transition-colors"
                     >
                       <Paperclip className="w-4 h-4 sm:w-5 sm:h-5" />
                     </Button>
                   </div>
                   
                   {/* Text Input */}
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 py-2 sm:py-3">
                     <Textarea
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
                       onKeyDown={handleKeyDown}
                       placeholder={modePlaceholders[currentMode]}
-                      className="bg-transparent border-0 text-white placeholder-muted resize-none focus:ring-0 focus:outline-none text-sm sm:text-base min-h-[40px] max-h-[120px] py-2 sm:py-3 px-0"
+                      className="bg-transparent border-0 text-white placeholder-muted resize-none focus:ring-0 focus:outline-none text-sm sm:text-base min-h-[40px] max-h-[150px] py-0 px-0 scrollbar-hide"
+                      style={{ fontSize: '16px' }} // Prevents iOS zoom
                       rows={1}
                     />
                   </div>
@@ -349,7 +340,7 @@ export default function ChatArea({
                     <Button
                       onClick={handleSend}
                       disabled={(!input.trim() && attachedFiles.length === 0) || isLoading}
-                      className="bg-purple-primary hover:bg-purple-600 disabled:bg-gray-600 p-1.5 sm:p-2 rounded-lg transition-colors"
+                      className="bg-purple-primary hover:bg-purple-600 disabled:bg-gray-600 disabled:cursor-not-allowed p-1.5 sm:p-2 rounded-lg transition-colors"
                       size="sm"
                     >
                       <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -370,12 +361,16 @@ export default function ChatArea({
                   </div>
                   <span className="hidden sm:inline">14 Models Available</span>
                 </div>
-                <span className="hidden lg:inline">Shivaay AI can make mistakes. Verify important information.</span>
+                <div className="flex items-center space-x-2">
+                  <span className="text-xs">
+                    {input.length > 0 && `${input.length} chars`}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </main>
+      </div>
 
       {/* Admin Panel */}
       <AdminPanel
