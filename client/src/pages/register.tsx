@@ -34,6 +34,7 @@ export default function Register() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
+        credentials: "include", // Important for cookies
       });
       
       if (!response.ok) {
@@ -44,8 +45,8 @@ export default function Register() {
       return response.json();
     },
     onSuccess: () => {
-      // Redirect to home page after successful registration
-      setLocation("/");
+      // Force reload to refresh auth state
+      window.location.href = "/";
     },
     onError: (error: any) => {
       console.error("Registration error:", error);

@@ -32,6 +32,7 @@ export default function Login() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
+        credentials: "include", // Important for cookies
       });
       
       if (!response.ok) {
@@ -42,8 +43,8 @@ export default function Login() {
       return response.json();
     },
     onSuccess: () => {
-      // Redirect to home page after successful login
-      setLocation("/");
+      // Force reload to refresh auth state
+      window.location.href = "/";
     },
     onError: (error: any) => {
       console.error("Login error:", error);
