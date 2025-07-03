@@ -1,0 +1,148 @@
+import { 
+  conversations, 
+  messages, 
+  files,
+  type Conversation, 
+  type Message, 
+  type File as FileType,
+  type InsertConversation, 
+  type InsertMessage, 
+  type InsertFile,
+  type AIModel
+} from "@shared/schema";
+
+export interface IStorage {
+  // Conversations
+  createConversation(conversation: InsertConversation): Promise<Conversation>;
+  getConversation(id: number): Promise<Conversation | undefined>;
+  
+  // Messages
+  saveMessage(message: InsertMessage): Promise<Message>;
+  getMessagesByConversation(conversationId: number): Promise<Message[]>;
+  getMessagesByMode(mode: string): Promise<Message[]>;
+  
+  // Files
+  saveFile(file: InsertFile): Promise<FileType>;
+  getFile(id: number): Promise<FileType | undefined>;
+  
+  // External API
+  callA3ZAPI(message: string, model: string): Promise<{ message: string; model: string }>;
+  extractPDFText(buffer: Buffer): Promise<string>;
+}
+
+export class MemStorage implements IStorage {
+  private conversations: Map<number, Conversation>;
+  private messages: Map<number, Message>;
+  private files: Map<number, FileType>;
+  private currentConversationId: number;
+  private currentMessageId: number;
+  private currentFileId: number;
+
+  constructor() {
+    this.conversations = new Map();
+    this.messages = new Map();
+    this.files = new Map();
+    this.currentConversationId = 1;
+    this.currentMessageId = 1;
+    this.currentFileId = 1;
+  }
+
+  async createConversation(insertConversation: InsertConversation): Promise<Conversation> {
+    const id = this.currentConversationId++;
+    const conversation: Conversation = {
+      ...insertConversation,
+      id,
+      createdAt: new Date(),
+    };
+    this.conversations.set(id, conversation);
+    return conversation;
+  }
+
+  async getConversation(id: number): Promise<Conversation | undefined> {
+    return this.conversations.get(id);
+  }
+
+  async saveMessage(insertMessage: InsertMessage): Promise<Message> {
+    const id = this.currentMessageId++;
+    const message: Message = {
+      ...insertMessage,
+      id,
+      createdAt: new Date(),
+    };
+    this.messages.set(id, message);
+    return message;
+  }
+
+  async getMessagesByConversation(conversationId: number): Promise<Message[]> {
+    return Array.from(this.messages.values())
+      .filter(msg => msg.conversationId === conversationId)
+      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+  }
+
+  async getMessagesByMode(mode: string): Promise<Message[]> {
+    // For now, return all messages since we're not using conversation context
+    return Array.from(this.messages.values())
+      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+  }
+
+  async saveFile(insertFile: InsertFile): Promise<FileType> {
+    const id = this.currentFileId++;
+    const file: FileType = {
+      ...insertFile,
+      id,
+      createdAt: new Date(),
+    };
+    this.files.set(id, file);
+    return file;
+  }
+
+  async getFile(id: number): Promise<FileType | undefined> {
+    return this.files.get(id);
+  }
+
+  async callA3ZAPI(message: string, model: string): Promise<{ message: string; model: string }> {
+    try {
+      const apiUrl = `https://api.a3z.workers.dev/?user=${encodeURIComponent(message)}&model=${model}`;
+      
+      const response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'User-Agent': 'ShivaayAI/1.0',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status}`);
+      }
+
+      const data = await response.text();
+      
+      // The API returns plain text response
+      return {
+        message: data,
+        model: model,
+      };
+    } catch (error) {
+      console.error("A3Z API Error:", error);
+      
+      // Fallback response
+      return {
+        message: "I apologize, but I'm currently unable to process your request due to a technical issue. Please try again in a moment.",
+        model: model,
+      };
+    }
+  }
+
+  async extractPDFText(buffer: Buffer): Promise<string> {
+    try {
+      // For a production app, you would use a proper PDF parsing library like pdf2pic or pdf-parse
+      // For now, return a placeholder
+      return `[PDF content extraction would happen here. File size: ${buffer.length} bytes]`;
+    } catch (error) {
+      console.error("PDF extraction error:", error);
+      return "[Unable to extract PDF content]";
+    }
+  }
+}
+
+export const storage = new MemStorage();
