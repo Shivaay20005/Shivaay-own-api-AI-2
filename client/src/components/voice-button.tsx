@@ -50,11 +50,21 @@ export default function VoiceButton({
     window.shivaaySpeak = speak;
   }
 
-  const handleVoiceToggle = () => {
+  const handleVoiceToggle = async () => {
     if (isListening) {
       stopListening();
     } else {
-      startListening();
+      // Check if we're on a secure context (HTTPS or localhost)
+      if (!window.isSecureContext && location.hostname !== "localhost") {
+        toast({
+          title: "Secure Connection Required",
+          description: "Voice recognition requires HTTPS. Please use a secure connection.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      await startListening();
     }
   };
 

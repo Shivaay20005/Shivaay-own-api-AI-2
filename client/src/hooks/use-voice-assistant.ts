@@ -19,7 +19,7 @@ export function useVoiceAssistant({
   // Initialize speech recognition
   const initializeRecognition = useCallback(() => {
     if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
-      onError?.("Speech recognition is not supported in this browser");
+      onError?.("Speech recognition is not supported in this browser. Please use Chrome, Edge, or Safari.");
       return null;
     }
 
@@ -43,7 +43,29 @@ export function useVoiceAssistant({
 
     recognition.onerror = (event: any) => {
       setIsListening(false);
-      onError?.(`Speech recognition error: ${event.error}`);
+      
+      let errorMessage = "Speech recognition error occurred";
+      switch (event.error) {
+        case "not-allowed":
+          errorMessage = "Microphone access denied. Please allow microphone permission in your browser settings.";
+          break;
+        case "no-speech":
+          errorMessage = "No speech detected. Please try speaking closer to your microphone.";
+          break;
+        case "audio-capture":
+          errorMessage = "Microphone not found or not working. Please check your microphone.";
+          break;
+        case "network":
+          errorMessage = "Network error occurred. Please check your internet connection.";
+          break;
+        case "service-not-allowed":
+          errorMessage = "Speech recognition service not allowed. Please use HTTPS or localhost.";
+          break;
+        default:
+          errorMessage = `Speech recognition error: ${event.error}`;
+      }
+      
+      onError?.(errorMessage);
     };
 
     recognition.onend = () => {
@@ -54,7 +76,17 @@ export function useVoiceAssistant({
   }, [language, onTranscript, onError]);
 
   // Start listening
-  const startListening = useCallback(() => {
+  const startListening = useCallback(async () => {
+    // First check if we have microphone permission
+    try {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+      }
+    } catch (permissionError) {
+      onError?.("Microphone permission denied. Please allow microphone access and try again.");
+      return;
+    }
+
     if (!recognitionRef.current) {
       recognitionRef.current = initializeRecognition();
     }
@@ -63,7 +95,7 @@ export function useVoiceAssistant({
       try {
         recognitionRef.current.start();
       } catch (error) {
-        onError?.("Failed to start voice recognition");
+        onError?.("Failed to start voice recognition. Make sure you're using HTTPS or localhost.");
       }
     }
   }, [initializeRecognition, isListening, onError]);

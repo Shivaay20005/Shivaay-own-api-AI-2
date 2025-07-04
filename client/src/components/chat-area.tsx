@@ -413,6 +413,9 @@ export default function ChatArea({
                     <span className="sm:hidden">🌐</span>
                   </div>
                   <span className="hidden sm:inline">14 Models Available</span>
+                  {("webkitSpeechRecognition" in window || "SpeechRecognition" in window) && (
+                    <span className="hidden lg:inline">🎤 Voice Input</span>
+                  )}
                 </div>
                 <span className="hidden lg:inline">Shivaay AI can make mistakes. Verify important information.</span>
               </div>
