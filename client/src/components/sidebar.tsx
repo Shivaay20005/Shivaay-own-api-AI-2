@@ -119,7 +119,7 @@ export default function Sidebar({ currentMode, onModeChange, isMobileOpen, onMob
         </div>
 
         {/* Conversation Modes */}
-        <div className="flex-1 overflow-y-auto p-3 lg:p-4">
+        <div className="flex-1 overflow-y-auto smooth-scroll p-3 lg:p-4">
           <h3 className="text-xs lg:text-sm font-semibold text-muted uppercase tracking-wider mb-3 lg:mb-4">
             Conversation Modes
           </h3>

@@ -10,7 +10,7 @@ export default function ChatPage() {
   const [hackerModeEnabled, setHackerModeEnabled] = useState(false);
 
   return (
-    <div className="h-screen overflow-hidden bg-dark-primary text-white flex">
+    <div className="responsive-container layout-container bg-dark-primary text-white">
       {/* Mobile overlay */}
       {isMobileMenuOpen && (
         <div 
@@ -19,22 +19,26 @@ export default function ChatPage() {
         />
       )}
       
-      <Sidebar
-        currentMode={currentMode}
-        onModeChange={setCurrentMode}
-        isMobileOpen={isMobileMenuOpen}
-        onMobileToggle={setIsMobileMenuOpen}
-        hackerModeEnabled={hackerModeEnabled}
-      />
+      <div className="sidebar-area smooth-scroll">
+        <Sidebar
+          currentMode={currentMode}
+          onModeChange={setCurrentMode}
+          isMobileOpen={isMobileMenuOpen}
+          onMobileToggle={setIsMobileMenuOpen}
+          hackerModeEnabled={hackerModeEnabled}
+        />
+      </div>
       
-      <ChatArea
-        currentMode={currentMode}
-        selectedModel={selectedModel}
-        onModelChange={setSelectedModel}
-        onMobileMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        hackerModeEnabled={hackerModeEnabled}
-        onToggleHackerMode={setHackerModeEnabled}
-      />
+      <div className="main-content-area">
+        <ChatArea
+          currentMode={currentMode}
+          selectedModel={selectedModel}
+          onModelChange={setSelectedModel}
+          onMobileMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          hackerModeEnabled={hackerModeEnabled}
+          onToggleHackerMode={setHackerModeEnabled}
+        />
+      </div>
     </div>
   );
 }
