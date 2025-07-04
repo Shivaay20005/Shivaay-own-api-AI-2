@@ -312,7 +312,7 @@ export default function ChatArea({
         )}
 
         {/* Input Area with Integrated File Upload */}
-        <div className="border-t border-gray-700 bg-dark-secondary mobile-input-area">
+        <div className="border-t border-gray-700 bg-transparent mobile-input-area">
           <div className="p-3 sm:p-4 lg:p-6 mobile-input-container">
             <div className="w-full max-w-4xl mx-auto">
               {/* Attached Files Display */}
@@ -347,7 +347,7 @@ export default function ChatArea({
               <div className="relative">
                 <div className="chat-input-container flex items-end space-x-2">
                   {/* File Upload Button */}
-                  <div className="flex-shrink-0 p-2 sm:p-3">
+                  <div className="flex-shrink-0 p-1 sm:p-2">
                     <input
                       ref={fileInputRef}
                       type="file"
@@ -373,13 +373,13 @@ export default function ChatArea({
                       onChange={(e) => setInput(e.target.value)}
                       onKeyDown={handleKeyDown}
                       placeholder={modePlaceholders[currentMode]}
-                      className="chat-input-textarea mobile-input-field min-h-[40px] max-h-[120px] py-2 sm:py-3 px-0"
+                      className="chat-input-textarea mobile-input-field min-h-[40px] max-h-[120px] py-2 sm:py-3 px-2 bg-transparent border-none outline-none resize-none focus:outline-none focus:ring-0 text-white placeholder-gray-400"
                       rows={1}
                     />
                   </div>
                   
                   {/* Voice Button */}
-                  <div className="flex-shrink-0 p-2 sm:p-3">
+                  <div className="flex-shrink-0 p-1 sm:p-2">
                     <VoiceButton
                       onTranscript={handleVoiceTranscript}
                       onSpeakResponse={handleSpeakResponse}
@@ -389,7 +389,7 @@ export default function ChatArea({
                   </div>
                   
                   {/* Send Button */}
-                  <div className="flex-shrink-0 p-2 sm:p-3">
+                  <div className="flex-shrink-0 p-1 sm:p-2">
                     <Button
                       onClick={handleSend}
                       disabled={(!input.trim() && attachedFiles.length === 0) || isLoading}

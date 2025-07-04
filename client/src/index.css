@@ -150,6 +150,29 @@ body {
   }
 }
 
+/* Better responsive scaling for all elements */
+@media (max-width: 480px) {
+  .responsive-container {
+    font-size: 14px;
+  }
+  
+  .mobile-input-container {
+    padding: 4px !important;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .responsive-container {
+    font-size: 15px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .layout-container {
+    grid-template-columns: 280px 1fr;
+  }
+}
+
 /* Mobile viewport optimizations */
 @media (max-width: 768px) {
   .mobile-optimized {
@@ -159,11 +182,15 @@ body {
   }
   
   .mobile-input-container {
-    padding: 12px !important;
+    padding: 8px !important;
+    background: transparent !important;
+    border: none !important;
   }
   
   .mobile-input-field {
     font-size: 16px !important; /* Prevents zoom on iOS */
+    background: transparent !important;
+    border: none !important;
   }
   
   .layout-container {
@@ -180,8 +207,11 @@ body {
   }
   
   .mobile-input-area {
-    padding: 12px !important;
-    padding-bottom: max(12px, env(safe-area-inset-bottom)) !important;
+    padding: 8px !important;
+    padding-bottom: max(8px, env(safe-area-inset-bottom)) !important;
+    background: transparent !important;
+    border: none !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
   }
 }
 
@@ -194,6 +224,45 @@ html, body {
   height: 100%;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Clean input styling */
+.chat-input-container {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+}
+
+.chat-input-container:hover {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.chat-input-container:focus-within {
+  border-color: rgba(138, 129, 255, 0.5) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 0 0 3px rgba(138, 129, 255, 0.1) !important;
+}
+
+/* Remove textarea default styling */
+.chat-input-textarea {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  resize: none !important;
+  color: white !important;
+}
+
+.chat-input-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.chat-input-textarea:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
 }
 
 /* Fix for mobile textarea and input - remove white lines */
