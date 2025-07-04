@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { validateFile } from "@/lib/file-utils";
 import VoiceButton from "@/components/voice-button";
 import { useToast } from "@/hooks/use-toast";
+import ScrollToTop from "@/components/scroll-to-top";
 
 interface ChatAreaProps {
   currentMode: ConversationMode;
@@ -433,6 +434,9 @@ export default function ChatArea({
         hackerModeEnabled={hackerModeEnabled}
         onToggleHackerMode={onToggleHackerMode}
       />
+      
+      {/* Scroll to Top Button */}
+      <ScrollToTop />
     </div>
   );
 }

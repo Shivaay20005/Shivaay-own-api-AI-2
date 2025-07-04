@@ -3,6 +3,7 @@ import { ConversationMode } from "@shared/schema";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
+import SidebarScrollIndicator from "@/components/sidebar-scroll-indicator";
 
 interface SidebarProps {
   currentMode: ConversationMode;
@@ -95,9 +96,10 @@ export default function Sidebar({ currentMode, onModeChange, isMobileOpen, onMob
       )}
       
       <aside className={cn(
-        "fixed lg:static inset-y-0 left-0 z-50 w-72 lg:w-80 bg-dark-secondary border-r border-gray-700 transform transition-transform duration-200 ease-in-out",
+        "fixed lg:static inset-y-0 left-0 z-50 w-72 lg:w-80 bg-dark-secondary border-r border-gray-700 transform transition-transform duration-200 ease-in-out relative",
         isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}>
+        <SidebarScrollIndicator containerSelector=".sidebar-area .smooth-scroll" />
         <div className="flex flex-col h-full">
         {/* Header */}
         <div className="p-4 lg:p-6 border-b border-gray-700">

@@ -9,31 +9,51 @@ html {
 
 /* Optimize for different zoom levels */
 body {
-  font-size: clamp(14px, 1.2vw, 16px);
+  font-size: 16px;
   line-height: 1.5;
   min-width: 320px;
-  zoom: 1; /* Reset zoom for consistent rendering */
+  zoom: 1;
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Consistent scaling for all zoom levels */
+* {
+  box-sizing: border-box;
+}
+
+.zoom-responsive {
+  transform-origin: top left;
+  transition: all 0.2s ease;
 }
 
 /* Better text scaling for different zoom levels */
 .text-responsive {
-  font-size: clamp(0.875rem, 1.25vw, 1rem);
+  font-size: 0.875rem;
 }
 
 .text-responsive-lg {
-  font-size: clamp(1rem, 1.5vw, 1.25rem);
+  font-size: 1rem;
 }
 
 .text-responsive-xl {
-  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  font-size: 1.25rem;
 }
 
 /* Improved button and UI element scaling */
 .responsive-ui {
-  padding: clamp(0.5rem, 1vw, 0.75rem);
-  border-radius: clamp(0.375rem, 0.5vw, 0.5rem);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+/* Better layout proportions */
+.layout-optimized {
+  min-height: 100vh;
+  height: 100vh;
+  max-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 :root {
@@ -99,11 +119,11 @@ body {
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* Optimized layout for 75% zoom and different screen sizes */
+/* Optimized layout for all zoom levels */
 @media (min-width: 768px) {
   .layout-container {
     display: grid;
-    grid-template-columns: minmax(280px, 320px) 1fr;
+    grid-template-columns: 300px 1fr;
     gap: 0;
     height: 100vh;
     max-height: 100vh;
@@ -115,38 +135,59 @@ body {
     overflow-y: auto;
     overflow-x: hidden;
     border-right: 1px solid rgba(255, 255, 255, 0.1);
-    min-width: 280px;
-    max-width: 320px;
+    width: 300px;
+    position: relative;
   }
   
   .main-content-area {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    min-width: 0; /* Prevents flex overflow */
+    min-width: 0;
     flex: 1;
+    width: calc(100vw - 300px);
   }
 }
 
-/* Enhanced responsive breakpoints for better zoom support */
+/* Enhanced responsive breakpoints for consistent layout */
 @media (min-width: 1024px) {
   .layout-container {
-    grid-template-columns: 300px 1fr;
+    grid-template-columns: 320px 1fr;
+  }
+  
+  .sidebar-area {
+    width: 320px;
+  }
+  
+  .main-content-area {
+    width: calc(100vw - 320px);
   }
 }
 
 @media (min-width: 1440px) {
   .layout-container {
-    grid-template-columns: 320px 1fr;
+    grid-template-columns: 340px 1fr;
+  }
+  
+  .sidebar-area {
+    width: 340px;
+  }
+  
+  .main-content-area {
+    width: calc(100vw - 340px);
   }
 }
 
 /* Ultra-wide screen support */
 @media (min-width: 1920px) {
   .layout-container {
+    grid-template-columns: 360px 1fr;
     max-width: 1800px;
     margin: 0 auto;
-    grid-template-columns: 320px 1fr;
+  }
+  
+  .sidebar-area {
+    width: 360px;
   }
 }
 
@@ -164,12 +205,6 @@ body {
 @media (min-width: 481px) and (max-width: 768px) {
   .responsive-container {
     font-size: 15px;
-  }
-}
-
-@media (min-width: 769px) and (max-width: 1024px) {
-  .layout-container {
-    grid-template-columns: 280px 1fr;
   }
 }
 
