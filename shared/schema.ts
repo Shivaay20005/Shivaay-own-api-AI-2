@@ -154,7 +154,17 @@ export const availableModels = [
 export type AIModel = typeof availableModels[number];
 
 export const conversationModes = [
-  "engineering" // Primary Engineering mode with all features
+  "general",
+  "friend", 
+  "search",
+  "coding",
+  "math",
+  "codesearch",
+  "procoder", 
+  "image",
+  "hacker",
+  "fullstack", // Admin-only mode
+  "engineering" // Engineering mode
 ] as const;
 
 export type ConversationMode = typeof conversationModes[number];

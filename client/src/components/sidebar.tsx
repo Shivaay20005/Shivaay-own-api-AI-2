@@ -1,11 +1,9 @@
-import { Brain, MessageCircle, Search, Code, Calculator, Image, Wrench, Zap, User, LogOut, Skull, Settings, Cpu } from "lucide-react";
+import { Brain, MessageCircle, Search, Code, Calculator, Image, Wrench, Zap, User, LogOut, Skull, Settings } from "lucide-react";
 import { ConversationMode } from "@shared/schema";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import SidebarScrollIndicator from "@/components/sidebar-scroll-indicator";
-import EngineeringControlPanel from "@/components/engineering-control-panel";
-import { useState } from "react";
 
 interface SidebarProps {
   currentMode: ConversationMode;
@@ -17,11 +15,67 @@ interface SidebarProps {
 
 const conversationModes = [
   {
+    id: "general" as ConversationMode,
+    name: "Shivaay AI",
+    description: "General assistant mode",
+    icon: Brain,
+    color: "bg-purple-primary",
+  },
+  {
+    id: "friend" as ConversationMode,
+    name: "Friend Talk",
+    description: "Casual conversations",
+    icon: MessageCircle,
+    color: "bg-green-500",
+  },
+  {
+    id: "search" as ConversationMode,
+    name: "Deep Search",
+    description: "Advanced research",
+    icon: Search,
+    color: "bg-blue-500",
+  },
+  {
+    id: "coding" as ConversationMode,
+    name: "Deep Coding",
+    description: "Programming help",
+    icon: Code,
+    color: "bg-indigo-500",
+  },
+  {
+    id: "math" as ConversationMode,
+    name: "Mathematics",
+    description: "Problem solving",
+    icon: Calculator,
+    color: "bg-orange-500",
+  },
+  {
+    id: "codesearch" as ConversationMode,
+    name: "Code Search",
+    description: "Programming queries",
+    icon: Search,
+    color: "bg-cyan-500",
+  },
+  {
+    id: "procoder" as ConversationMode,
+    name: "ShivaayPro Coder",
+    description: "Ultimate debugging",
+    icon: Zap,
+    color: "bg-red-500",
+  },
+  {
+    id: "image" as ConversationMode,
+    name: "Image Generation",
+    description: "AI art creation",
+    icon: Image,
+    color: "bg-teal-500",
+  },
+  {
     id: "engineering" as ConversationMode,
-    name: "Shivaay Engineering",
-    description: "Complete engineering control center with all AI capabilities",
+    name: "Engineering",
+    description: "Technical engineering solutions",
     icon: Settings,
-    color: "bg-gradient-to-r from-blue-500 to-purple-600",
+    color: "bg-yellow-500",
   },
 ];
 
@@ -35,7 +89,6 @@ const hackerMode = {
 
 export default function Sidebar({ currentMode, onModeChange, isMobileOpen, onMobileToggle, hackerModeEnabled = false }: SidebarProps) {
   const { user, logout, isLoggingOut } = useAuth();
-  const [showControlPanel, setShowControlPanel] = useState(false);
   
   // Include hacker mode only if enabled by admin  
   const availableModes = hackerModeEnabled ? [...conversationModes, hackerMode] : conversationModes;
@@ -130,16 +183,6 @@ export default function Sidebar({ currentMode, onModeChange, isMobileOpen, onMob
               </div>
               
               <Button
-                onClick={() => setShowControlPanel(true)}
-                variant="ghost"
-                size="sm"
-                className="w-full justify-start text-blue-400 hover:text-blue-300 hover:bg-blue-400/10 mb-2"
-              >
-                <Cpu className="w-4 h-4 mr-2" />
-                Engineering Controls
-              </Button>
-              
-              <Button
                 onClick={logout}
                 disabled={isLoggingOut}
                 variant="ghost"
@@ -154,11 +197,6 @@ export default function Sidebar({ currentMode, onModeChange, isMobileOpen, onMob
         </div>
         </div>
       </aside>
-      
-      <EngineeringControlPanel 
-        isOpen={showControlPanel}
-        onClose={() => setShowControlPanel(false)}
-      />
     </>
   );
 }
