@@ -171,6 +171,8 @@ Shivaay AI is a full-stack web application that provides a privacy-focused AI ch
 - ✓ Added memory manager for conversation context and intelligent responses
 - ✓ Created comprehensive AI router supporting multiple providers
 - ✓ Enhanced admin panel with tabbed interface for better organization
+- ✓ Removed Engineering mode and created dedicated Admin Settings Panel
+- ✓ Added comprehensive admin settings with system configuration, API keys, user management, AI model controls, and security features
 
 ### July 03, 2025 - Initial Setup
 - Basic chat interface with dark theme

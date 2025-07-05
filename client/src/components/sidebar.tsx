@@ -4,6 +4,8 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import SidebarScrollIndicator from "@/components/sidebar-scroll-indicator";
+import AdminSettingsPanel from "@/components/admin-settings-panel";
+import { useState } from "react";
 
 interface SidebarProps {
   currentMode: ConversationMode;
@@ -70,13 +72,6 @@ const conversationModes = [
     icon: Image,
     color: "bg-teal-500",
   },
-  {
-    id: "engineering" as ConversationMode,
-    name: "Engineering",
-    description: "Technical engineering solutions",
-    icon: Settings,
-    color: "bg-yellow-500",
-  },
 ];
 
 const hackerMode = {
@@ -89,6 +84,8 @@ const hackerMode = {
 
 export default function Sidebar({ currentMode, onModeChange, isMobileOpen, onMobileToggle, hackerModeEnabled = false }: SidebarProps) {
   const { user, logout, isLoggingOut } = useAuth();
+  const [showAdminSettings, setShowAdminSettings] = useState(false);
+  const [showModelNames, setShowModelNames] = useState(false);
   
   // Include hacker mode only if enabled by admin  
   const availableModes = hackerModeEnabled ? [...conversationModes, hackerMode] : conversationModes;
@@ -183,6 +180,16 @@ export default function Sidebar({ currentMode, onModeChange, isMobileOpen, onMob
               </div>
               
               <Button
+                onClick={() => setShowAdminSettings(true)}
+                variant="ghost"
+                size="sm"
+                className="w-full justify-start text-orange-400 hover:text-orange-300 hover:bg-orange-400/10 mb-2"
+              >
+                <Settings className="w-4 h-4 mr-2" />
+                Admin Settings
+              </Button>
+              
+              <Button
                 onClick={logout}
                 disabled={isLoggingOut}
                 variant="ghost"
@@ -197,6 +204,15 @@ export default function Sidebar({ currentMode, onModeChange, isMobileOpen, onMob
         </div>
         </div>
       </aside>
+      
+      <AdminSettingsPanel 
+        isOpen={showAdminSettings}
+        onClose={() => setShowAdminSettings(false)}
+        showModelNames={showModelNames}
+        onToggleModelNames={setShowModelNames}
+        hackerModeEnabled={hackerModeEnabled}
+        onToggleHackerMode={() => {}}
+      />
     </>
   );
 }

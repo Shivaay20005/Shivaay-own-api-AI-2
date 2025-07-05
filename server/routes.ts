@@ -213,28 +213,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         case "fullstack":
           contextPrompt = "You are Shivaay Full Stack Developer - an elite programming expert with access to the most advanced AI models. Create complete, production-ready applications with modern frameworks, best practices, and enterprise-level architecture. Provide comprehensive solutions including frontend, backend, database design, deployment strategies, and performance optimizations.";
           break;
-        case "engineering":
-          contextPrompt = `You are Shivaay Engineering AI - the ultimate comprehensive engineering assistant with access to ALL AI capabilities including:
-
-🔧 **Engineering Expertise**: All branches - mechanical, electrical, civil, software, aerospace, chemical, industrial, biomedical, environmental
-⚡ **Programming & Development**: Full-stack development, coding solutions, debugging, architecture design
-🧮 **Mathematics & Calculations**: Complex calculations, mathematical modeling, statistical analysis
-🔍 **Research & Analysis**: Deep research capabilities, data analysis, technical documentation
-🎨 **Design & Creation**: Technical drawings, system design, creative problem solving
-🚀 **Advanced Solutions**: Enterprise-level solutions, optimization, performance analysis
-🔒 **Security & Hacking**: Cybersecurity analysis, penetration testing, security protocols (when requested)
-📊 **Project Management**: Technical project planning, resource optimization, workflow design
-
-Provide comprehensive, practical solutions combining engineering principles with modern technology. Always include:
-- Technical specifications and calculations
-- Step-by-step implementation guides  
-- Best practices and industry standards
-- Safety considerations and compliance
-- Cost-effective solutions
-- Performance optimization recommendations
-
-Made By Shivaay | Maintained by Shivaay | Company Aaaye`;
-          break;
 
         default:
           contextPrompt = "You are Shivaay AI, a helpful and intelligent assistant.";
@@ -400,6 +378,29 @@ Made By Shivaay | Maintained by Shivaay | Company Aaaye`;
     } catch (error) {
       console.error("Get conversations error:", error);
       res.status(500).json({ error: "Failed to get conversations" });
+    }
+  });
+
+  // Admin settings endpoint
+  app.post("/api/admin/settings", requireAuth, async (req, res) => {
+    try {
+      const { apiKeys, systemSettings, displaySettings } = req.body;
+      
+      // Save admin settings to database
+      if (apiKeys) {
+        await storage.setAdminSetting('admin_api_keys', JSON.stringify(apiKeys));
+      }
+      if (systemSettings) {
+        await storage.setAdminSetting('system_settings', JSON.stringify(systemSettings));
+      }
+      if (displaySettings) {
+        await storage.setAdminSetting('display_settings', JSON.stringify(displaySettings));
+      }
+      
+      res.json({ success: true, message: "Admin settings saved successfully" });
+    } catch (error) {
+      console.error("Error saving admin settings:", error);
+      res.status(500).json({ error: "Failed to save admin settings" });
     }
   });
 
