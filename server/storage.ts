@@ -328,6 +328,8 @@ export class DatabaseStorage implements IStorage {
       codesearch: "\n\n🔎 **@ShivaayAI** - Code Search",
       procoder: "\n\n🚀 **@ShivaayAI** - Pro Coder",
       image: "\n\n🎨 **@ShivaayAI** - Image Creator",
+      engineering: "\n\n⚙️ **@ShivaayAI** - Engineering Expert",
+      fullstack: "\n\n🔧 **@ShivaayAI** - Full Stack Developer",
       hacker: "\n\n🔴 **@ShivaayHackerv** - Dark Mode Activated"
     };
     

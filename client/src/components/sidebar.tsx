@@ -1,4 +1,4 @@
-import { Brain, MessageCircle, Search, Code, Calculator, Image, Wrench, Zap, User, LogOut, Skull } from "lucide-react";
+import { Brain, MessageCircle, Search, Code, Calculator, Image, Wrench, Zap, User, LogOut, Skull, Settings } from "lucide-react";
 import { ConversationMode } from "@shared/schema";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
@@ -69,6 +69,13 @@ const conversationModes = [
     description: "AI art creation",
     icon: Image,
     color: "bg-teal-500",
+  },
+  {
+    id: "engineering" as ConversationMode,
+    name: "Engineering",
+    description: "Technical engineering solutions",
+    icon: Settings,
+    color: "bg-yellow-500",
   },
 ];
 

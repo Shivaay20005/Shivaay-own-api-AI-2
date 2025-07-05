@@ -163,7 +163,8 @@ export const conversationModes = [
   "procoder", 
   "image",
   "hacker",
-  "fullstack" // New admin-only mode
+  "fullstack", // Admin-only mode
+  "engineering" // Engineering mode
 ] as const;
 
 export type ConversationMode = typeof conversationModes[number];

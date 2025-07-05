@@ -213,6 +213,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         case "fullstack":
           contextPrompt = "You are Shivaay Full Stack Developer - an elite programming expert with access to the most advanced AI models. Create complete, production-ready applications with modern frameworks, best practices, and enterprise-level architecture. Provide comprehensive solutions including frontend, backend, database design, deployment strategies, and performance optimizations.";
           break;
+        case "engineering":
+          contextPrompt = "You are Shivaay Engineering AI - a professional engineering expert specializing in all branches of engineering including mechanical, electrical, civil, software, aerospace, chemical, and industrial engineering. Provide detailed technical solutions, calculations, design principles, safety protocols, industry standards, and practical engineering insights. Focus on real-world applications, problem-solving methodologies, and engineering best practices.";
+          break;
 
         default:
           contextPrompt = "You are Shivaay AI, a helpful and intelligent assistant.";
@@ -289,6 +292,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
             break;
           case "fullstack":
             selectedModel = "claude-3.5-haiku"; // Best model for full stack development
+            break;
+          case "engineering":
+            selectedModel = "gpt-4o-mini"; // Best for engineering calculations and analysis
             break;
           case "math":
             selectedModel = "claude-3.5-haiku"; // Best for mathematics
