@@ -3,6 +3,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "@/providers/theme-provider";
 import { useAuth } from "@/hooks/use-auth";
 import ChatPage from "@/pages/chat";
 import Login from "@/pages/login";
@@ -14,8 +15,8 @@ function AuthenticatedRouter() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-dark-primary">
-        <div className="text-white text-lg">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-foreground text-lg">Loading Shivaay AI...</div>
       </div>
     );
   }
@@ -43,12 +44,14 @@ function AuthenticatedRouter() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <div className="bg-dark-primary text-white min-h-screen min-h-dvh font-sans mobile-optimized">
-          <Toaster />
-          <AuthenticatedRouter />
-        </div>
-      </TooltipProvider>
+      <ThemeProvider defaultTheme="dark" storageKey="shivaay-ui-theme">
+        <TooltipProvider>
+          <div className="bg-background text-foreground min-h-screen min-h-dvh font-sans transition-colors">
+            <Toaster />
+            <AuthenticatedRouter />
+          </div>
+        </TooltipProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

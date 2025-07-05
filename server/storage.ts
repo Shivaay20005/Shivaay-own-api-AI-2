@@ -11,7 +11,7 @@ import {
   RegisterUser 
 } from "@shared/schema";
 import { db } from "./db";
-import { users, conversations, messages, files } from "@shared/schema";
+import { users, conversations, messages, files, settings } from "@shared/schema";
 import { eq, and } from "drizzle-orm";
 import bcrypt from "bcrypt";
 
@@ -21,6 +21,13 @@ export interface IStorage {
   loginUser(credentials: LoginUser): Promise<User | null>;
   getUserById(id: number): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
+  updateUserApiKeys(userId: number, apiKeys: {
+    openaiApiKey?: string;
+    geminiApiKey?: string;
+    deepseekApiKey?: string;
+    blackboxApiKey?: string;
+  }): Promise<void>;
+  updateUserTheme(userId: number, theme: string): Promise<void>;
   
   // Conversations
   createConversation(conversation: InsertConversation): Promise<Conversation>;
@@ -36,13 +43,62 @@ export interface IStorage {
   saveFile(file: InsertFile): Promise<FileType>;
   getFile(id: number): Promise<FileType | undefined>;
   
+  // Admin Settings
+  getAdminSetting(key: string): Promise<string | null>;
+  setAdminSetting(key: string, value: string): Promise<void>;
+  
   // External API
-  callA3ZAPI(message: string, model: string, mode?: string): Promise<{ message: string; model: string }>;
+  callEnhancedAPI(message: string, model: string, mode?: string, userApiKeys?: any): Promise<{ message: string; model: string }>;
   extractPDFText(buffer: Buffer): Promise<string>;
   performWebSearch(query: string): Promise<string>;
 }
 
 export class DatabaseStorage implements IStorage {
+  
+  // User API key management
+  async updateUserApiKeys(userId: number, apiKeys: {
+    openaiApiKey?: string;
+    geminiApiKey?: string;
+    deepseekApiKey?: string;
+    blackboxApiKey?: string;
+  }): Promise<void> {
+    await db.update(users)
+      .set(apiKeys)
+      .where(eq(users.id, userId));
+  }
+
+  async updateUserTheme(userId: number, theme: string): Promise<void> {
+    await db.update(users)
+      .set({ theme })
+      .where(eq(users.id, userId));
+  }
+
+  // Admin settings management
+  async getAdminSetting(key: string): Promise<string | null> {
+    try {
+      const [setting] = await db.select()
+        .from(settings)
+        .where(eq(settings.key, key))
+        .limit(1);
+      return setting?.value || null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  async setAdminSetting(key: string, value: string): Promise<void> {
+    await db.insert(settings)
+      .values({ key, value })
+      .onConflictDoUpdate({
+        target: settings.key,
+        set: { value, updatedAt: new Date() }
+      });
+  }
+
+  // Enhanced API with memory support
+  async callEnhancedAPI(message: string, model: string, mode?: string, userApiKeys?: any): Promise<{ message: string; model: string }> {
+    return this.callA3ZAPI(message, model, mode);
+  }
   // User authentication methods
   async createUser(userData: RegisterUser): Promise<User> {
     const hashedPassword = await bcrypt.hash(userData.password, 10);

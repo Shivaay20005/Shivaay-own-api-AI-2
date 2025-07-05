@@ -2,20 +2,104 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Global smooth scrolling */
-html {
-  scroll-behavior: smooth;
+@layer base {
+  :root {
+    /* Light Theme Colors */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+    
+    /* Shivaay Light Theme */
+    --shivaay-bg: 0 0% 98%;
+    --shivaay-surface: 0 0% 95%;
+    --shivaay-text: 222.2 84% 4.9%;
+    --shivaay-text-muted: 215.4 16.3% 46.9%;
+    --shivaay-border: 214.3 31.8% 91.4%;
+    --shivaay-accent: 221.2 83.2% 53.3%;
+  }
+
+  .dark {
+    /* Dark Theme Colors */
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 94.1%;
+    
+    /* Shivaay Dark Theme */
+    --shivaay-bg: 220 27% 8%;
+    --shivaay-surface: 220 27% 12%;
+    --shivaay-text: 210 40% 98%;
+    --shivaay-text-muted: 215 20.2% 65.1%;
+    --shivaay-border: 217.2 32.6% 17.5%;
+    --shivaay-accent: 217.2 91.2% 59.8%;
+  }
 }
 
-/* Optimize for different zoom levels */
+/* Global styling */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  height: 100%;
+}
+
 body {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 16px;
   line-height: 1.5;
   min-width: 320px;
-  zoom: 1;
+  min-height: 100%;
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: hsl(var(--shivaay-bg));
+  color: hsl(var(--shivaay-text));
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
 }
 
 /* Consistent scaling for all zoom levels */
@@ -149,7 +233,70 @@ body {
   }
 }
 
-/* Enhanced responsive breakpoints for consistent layout */
+/* Mobile Responsive Layout */
+@media (max-width: 767px) {
+  .layout-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+  }
+  
+  .sidebar-area {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 280px;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 50;
+    background: hsl(var(--shivaay-surface));
+    border-right: 1px solid hsl(var(--shivaay-border));
+  }
+  
+  .sidebar-area.open {
+    transform: translateX(0);
+  }
+  
+  .main-content-area {
+    flex: 1;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+}
+
+/* Tablet and Desktop Layout */
+@media (min-width: 768px) {
+  .layout-container {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+  }
+  
+  .sidebar-area {
+    width: 300px;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-right: 1px solid hsl(var(--shivaay-border));
+    background: hsl(var(--shivaay-surface));
+  }
+  
+  .main-content-area {
+    flex: 1;
+    width: calc(100vw - 300px);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+/* Large Desktop */
 @media (min-width: 1024px) {
   .layout-container {
     grid-template-columns: 320px 1fr;
@@ -164,30 +311,16 @@ body {
   }
 }
 
+/* Ultra-wide Support */
 @media (min-width: 1440px) {
   .layout-container {
-    grid-template-columns: 340px 1fr;
-  }
-  
-  .sidebar-area {
-    width: 340px;
-  }
-  
-  .main-content-area {
-    width: calc(100vw - 340px);
-  }
-}
-
-/* Ultra-wide screen support */
-@media (min-width: 1920px) {
-  .layout-container {
-    grid-template-columns: 360px 1fr;
+    grid-template-columns: 350px 1fr;
     max-width: 1800px;
     margin: 0 auto;
   }
   
   .sidebar-area {
-    width: 360px;
+    width: 350px;
   }
 }
 

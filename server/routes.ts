@@ -4,6 +4,7 @@ import multer from "multer";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
+import { memoryManager } from "./memory-manager";
 import { insertMessageSchema, loginUserSchema, registerUserSchema } from "@shared/schema";
 import { z } from "zod";
 
@@ -209,6 +210,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         case "image":
           contextPrompt = "You are an AI art creator. Help with image generation prompts, creative descriptions, and visual concepts.";
           break;
+        case "fullstack":
+          contextPrompt = "You are Shivaay Full Stack Developer - an elite programming expert with access to the most advanced AI models. Create complete, production-ready applications with modern frameworks, best practices, and enterprise-level architecture. Provide comprehensive solutions including frontend, backend, database design, deployment strategies, and performance optimizations.";
+          break;
 
         default:
           contextPrompt = "You are Shivaay AI, a helpful and intelligent assistant.";
@@ -243,14 +247,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
-      // Combine context, web search results, and user message
+      // Get conversation memory for context
+      const userId = (req.session as any).userId || 1;
+      const conversationContext = memoryManager.getConversationContext(userId, mode);
+      
+      // Combine context, conversation memory, web search results, and user message
       let fullMessage = `${contextPrompt}\n\n`;
+      
+      // Add conversation history for context
+      if (conversationContext.length > 0) {
+        fullMessage += "Previous conversation context:\n";
+        conversationContext.slice(-5).forEach(msg => {
+          const role = msg.role === 'user' ? 'User' : 'Shivaay';
+          fullMessage += `${role}: ${msg.content.substring(0, 200)}${msg.content.length > 200 ? '...' : ''}\n`;
+        });
+        fullMessage += "\n";
+      }
       
       if (webSearchResults) {
         fullMessage += `${webSearchResults}\n\n`;
       }
       
-      fullMessage += `User: ${message}`;
+      fullMessage += `Current User Message: ${message}`;
 
       // For deep search and coding modes, increase character limit to 10,000 lines
       const isDeepMode = mode === "search" || mode === "coding" || mode === "procoder" || mode === "codesearch";
@@ -268,6 +286,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           case "procoder":
           case "codesearch":
             selectedModel = "gpt-4o-mini"; // Best available for coding
+            break;
+          case "fullstack":
+            selectedModel = "claude-3.5-haiku"; // Best model for full stack development
             break;
           case "math":
             selectedModel = "claude-3.5-haiku"; // Best for mathematics
@@ -289,8 +310,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Call A3Z API with selected model and mode
       const response = await storage.callA3ZAPI(fullMessage, selectedModel, mode);
       
-      // Save message to storage
-      await storage.saveMessage({
+      // Save messages to storage and memory
+      const userMsg = await storage.saveMessage({
         conversationId: null, // For now, not using conversations
         role: "user",
         content: message,
@@ -298,13 +319,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         model: null,
       });
 
-      await storage.saveMessage({
+      const assistantMsg = await storage.saveMessage({
         conversationId: null,
         role: "assistant", 
         content: response.message,
         files: null,
         model: response.model,
       });
+
+      // Add messages to conversation memory
+      memoryManager.addMessage(userId, mode, userMsg);
+      memoryManager.addMessage(userId, mode, assistantMsg);
 
       res.json(response);
     } catch (error) {
